@@ -29,8 +29,8 @@ Microsoft Edge) as well as Node.
 
 | Environment       | Supported versions               |
 |-------------------|----------------------------------|
-| Node              | 18.20.5+*, 20, 22, 24            |
-| Safari            | 16*, 17*                         |
+| Node              | 20, 22, 24                       |
+| Safari            | 16*, 17*, 26*                    |
 | Chrome            | Evergreen                        |
 | Firefox           | Evergreen, 102*, 115*, 128*, 140 |
 | Edge              | Evergreen                        |
