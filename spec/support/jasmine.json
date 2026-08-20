@@ -7,9 +7,10 @@
   "helpers": [
     "helpers/init.js",
     "helpers/domHelpers.js",
+    "helpers/environments.js",
     "helpers/integrationMatchers.js",
     "helpers/callerFilenameShim.js",
-    "helpers/overrideConsoleLogForCircleCi.js",
+    "helpers/monkeyPatchingSpecs.js",
     "helpers/nodeDefineJasmineUnderTest.js",
     "helpers/resetEnv.js"
   ],

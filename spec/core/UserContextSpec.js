@@ -1,52 +1,49 @@
 describe('UserContext', function() {
   it('Behaves just like an plain object', function() {
-    const context = new jasmineUnderTest.UserContext(),
-      properties = [];
-
-    for (const prop in context) {
-      if (obj.hasOwnProperty(prop)) {
-        properties.push(prop);
-      }
-    }
-
-    expect(properties).toEqual([]);
+    const context = new privateUnderTest.UserContext();
+    expect(Object.keys(context)).toEqual([]);
   });
 
   describe('.fromExisting', function() {
-    describe('when using an already built context as model', function() {
-      beforeEach(function() {
-        this.context = new jasmineUnderTest.UserContext();
-        this.context.key = 'value';
-        this.cloned = jasmineUnderTest.UserContext.fromExisting(this.context);
-      });
-
+    describe('when the parameter is a UserContext', function() {
       it('returns a cloned object', function() {
-        expect(this.cloned).toEqual(this.context);
+        const source = new privateUnderTest.UserContext();
+        source.key = 'value';
+
+        const cloned = privateUnderTest.UserContext.fromExisting(source);
+
+        expect(cloned).toEqual(source);
       });
 
       it('does not return the same object', function() {
-        expect(this.cloned).not.toBe(this.context);
+        const source = new privateUnderTest.UserContext();
+        const cloned = privateUnderTest.UserContext.fromExisting(source);
+        expect(cloned).not.toBe(source);
       });
     });
 
-    describe('when using a regular object as parameter', function() {
-      beforeEach(function() {
-        this.context = {};
-        this.value = 'value';
-        this.context.key = this.value;
-        this.cloned = jasmineUnderTest.UserContext.fromExisting(this.context);
-      });
-
+    describe('when the parameter is a regular object', function() {
       it('returns an object with the same attributes', function() {
-        expect(this.cloned.key).toEqual(this.value);
+        const cloned = privateUnderTest.UserContext.fromExisting({
+          key: 'value'
+        });
+        expect(cloned.key).toEqual('value');
       });
 
-      it('does not return the same object', function() {
-        expect(this.cloned).not.toBe(this.context);
+      it('returns a UserContext', function() {
+        const cloned = privateUnderTest.UserContext.fromExisting({});
+        expect(cloned).toBeInstanceOf(privateUnderTest.UserContext);
       });
 
-      it('returns an UserContext', function() {
-        expect(this.cloned.constructor).toBe(jasmineUnderTest.UserContext);
+      it('works even if the provided object overrides hasOwnProperty', function() {
+        const context = {
+          key: 'value',
+          hasOwnProperty() {
+            return false;
+          }
+        };
+        const cloned = privateUnderTest.UserContext.fromExisting(context);
+        expect(cloned.key).toEqual('value');
       });
     });
   });

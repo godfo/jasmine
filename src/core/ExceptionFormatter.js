@@ -1,4 +1,6 @@
-getJasmineRequireObj().ExceptionFormatter = function(j$) {
+getJasmineRequireObj().ExceptionFormatter = function(j$, private$) {
+  'use strict';
+
   const ignoredProperties = [
     'name',
     'message',
@@ -9,12 +11,13 @@ getJasmineRequireObj().ExceptionFormatter = function(j$) {
     'lineNumber',
     'column',
     'description',
-    'jasmineMessage'
+    'jasmineMessage',
+    'errors'
   ];
 
   function ExceptionFormatter(options) {
     const jasmineFile =
-      (options && options.jasmineFile) || j$.util.jasmineFile();
+      (options && options.jasmineFile) || private$.util.jasmineFile();
     this.message = function(error) {
       let message = '';
 
@@ -58,7 +61,7 @@ getJasmineRequireObj().ExceptionFormatter = function(j$) {
         lines.pop();
       }
 
-      const stackTrace = new j$.StackTrace(error);
+      const stackTrace = new private$.StackTrace(error);
       lines = lines.concat(filterJasmine(stackTrace));
 
       if (messageHandling === 'require') {
@@ -73,6 +76,19 @@ getJasmineRequireObj().ExceptionFormatter = function(j$) {
         });
         substack[0] = 'Caused by: ' + substack[0];
         lines = lines.concat(substack);
+      }
+
+      if (Array.isArray(error.errors)) {
+        for (let i = 0; i < error.errors.length; i++) {
+          if (error.errors[i] instanceof Error) {
+            lines.push('');
+            const substack = this.stack_(error.errors[i], {
+              messageHandling: 'require'
+            });
+            substack[0] = 'Error ' + (i + 1) + ': ' + substack[0];
+            lines = lines.concat(substack.map(x => '   ' + x));
+          }
+        }
       }
 
       return lines;
@@ -111,7 +127,9 @@ getJasmineRequireObj().ExceptionFormatter = function(j$) {
       }
 
       if (!empty) {
-        return 'error properties: ' + j$.basicPrettyPrinter_(result) + '\n';
+        return (
+          'error properties: ' + private$.basicPrettyPrinter(result) + '\n'
+        );
       }
 
       return '';

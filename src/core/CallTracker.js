@@ -1,4 +1,6 @@
-getJasmineRequireObj().CallTracker = function(j$) {
+getJasmineRequireObj().CallTracker = function(j$, private$) {
+  'use strict';
+
   /**
    * @namespace Spy#calls
    * @since 2.0.0
@@ -123,7 +125,9 @@ getJasmineRequireObj().CallTracker = function(j$) {
      * @param {Function} [argsCloner] A function to use to clone the arguments. Defaults to a shallow cloning function.
      * @function
      */
-    this.saveArgumentsByValue = function(argsCloner = j$.util.cloneArgs) {
+    this.saveArgumentsByValue = function(
+      argsCloner = private$.util.shallowCopyArgs
+    ) {
       opts.cloneArgs = true;
       opts.argsCloner = argsCloner;
     };

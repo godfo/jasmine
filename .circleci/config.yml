@@ -1,9 +1,16 @@
 # Run tests against supported Node versions, and (except for pull requests)
-# against supported browsers.
+# against supported browsers that are available on Saucelabs.
 
 version: 2.1
 
+orbs:
+  win: circleci/windows@5.0.0
+
 executors:
+  node26:
+    docker:
+      - image: cimg/node:26.0.0
+    working_directory: ~/workspace
   node24:
     docker:
       - image: cimg/node:24.0.0
@@ -16,10 +23,6 @@ executors:
     docker:
       - image: cimg/node:20.0.0
     working_directory: ~/workspace
-  node18:
-    docker:
-      - image: cimg/node:18.20.5
-    working_directory: ~/workspace
 
 jobs:
   build:
@@ -29,6 +32,29 @@ jobs:
     executor: << parameters.executor >>
     steps:
       - checkout
+      - run:
+          name: Update npm or delete .npmrc
+          command: |
+            # jasmine-core's .npmrc requires NPM 12. Upgrade NPM if possible,
+            # or delete .npmrc
+            #
+            # Note: this check may cause spurious warnings about invalid npm
+            # settings. npm 11 validates .npmrc even when you just run --version.
+            if [ $(npm --version | sed 's/\..*//') -lt 12 ]; then
+              if [ $(node --version | sed -e 's/\..*//' -e 's/^v//') -ge 26 ]; then
+                npm install -g npm@latest
+              else
+                # We can't reliably install NPM 12 on anything before Node 26:
+                # * NPM 12 won't run on any Node 20 version, or on older 22 and
+                #   24 minors.
+                # * npm install -g fails on cimg/node:24.* due to permissions.
+                # Removing .npmrc theoretically leaves CI vulnerable to supply
+                # chain attacks, but CI produces no artifacts and has no access
+                # to credentials (except for the Saucelabs API key, and that's
+                # only provided to trusted invocations.)
+                rm .npmrc
+              fi
+            fi
       - run:
           name: Report Node and NPM versions
           command: echo "Using Node $(node --version) and NPM $(npm --version)"
@@ -52,6 +78,31 @@ jobs:
       - attach_workspace:
           at: .
       - run:
+          name: Report Node and NPM versions
+          command: echo "Using Node $(node --version) and NPM $(npm --version)"
+      - run:
+          name: Run tests
+          command: npm test
+
+  test_win:
+    executor:
+      name: win/default
+      shell: bash.exe
+    steps:
+      - checkout
+      - run:
+          name: Install Node.js
+          command: nvm install 20.0.0 && nvm use 20.0.0
+      - run:
+          name: Report Node and NPM versions
+          command: echo "Using Node $(node --version) and NPM $(npm --version)"
+      - run:
+          name: Install dependencies
+          command: npm install
+      - run:
+          name: Build
+          command: npm run build
+      - run:
           name: Run tests
           command: npm test
 
@@ -64,11 +115,14 @@ jobs:
       - attach_workspace:
           at: .
       - run:
+          name: Report Node and NPM versions
+          command: echo "Using Node $(node --version) and NPM $(npm --version)"
+      - run:
           name: Run tests in parallel
           command: npm run test:parallel
 
   test_browsers: &test_browsers
-    executor: node18
+    executor: node20
     steps:
       - attach_workspace:
           at: .
@@ -93,7 +147,7 @@ jobs:
             export SAUCE_TUNNEL_NAME=$CIRCLE_WORKFLOW_JOB_ID
             scripts/start-sauce-connect
             set +o errexit
-            scripts/run-all-browsers
+            scripts/run-sauce-browsers
             exitcode=$?
             set -o errexit
             scripts/stop-sauce-connect
@@ -105,55 +159,27 @@ workflows:
   push:
     jobs:
       - build:
-          executor: node24
-          name: build_node_24
-      - build:
-          executor: node22
-          name: build_node_22
-      - build:
-          executor: node20
-          name: build_node_20
-      - build:
-          executor: node18
-          name: build_node_18
+          matrix:
+            parameters:
+              executor: [node20, node22, node24, node26]
       - test_node:
-          executor: node22
-          name: test_node_22
+          matrix:
+            parameters:
+              executor: [node20, node22, node24, node26]
           requires:
-            - build_node_22
-      - test_node:
-          executor: node20
-          name: test_node_20
-          requires:
-            - build_node_20
-      - test_node:
-          executor: node18
-          name: test_node_18
-          requires:
-            - build_node_18
+            - build-<< matrix.executor >>
       - test_parallel:
-          executor: node24
-          name: test_parallel_node_24
+          matrix:
+            parameters:
+              executor: [node20, node22, node24, node26]
           requires:
-            - build_node_24
-      - test_parallel:
-          executor: node22
-          name: test_parallel_node_22
-          requires:
-            - build_node_22
-      - test_parallel:
-          executor: node20
-          name: test_parallel_node_20
-          requires:
-            - build_node_20
-      - test_parallel:
-          executor: node18
-          name: test_parallel_node_18
-          requires:
-            - build_node_18
+            - build-<< matrix.executor >>
       - test_browsers:
           requires:
-             - build_node_18
+             - build-node20
+          context:
+            - saucelabs
           filters:
             branches:
               ignore: /pull\/.*/ # Don't run on pull requests.
+      - test_win

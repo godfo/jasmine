@@ -1,4 +1,6 @@
-getJasmineRequireObj().toBe = function(j$) {
+getJasmineRequireObj().toBe = function(j$, private$) {
+  'use strict';
+
   /**
    * {@link expect} the actual value to be `===` to the expected value.
    * @function

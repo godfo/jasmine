@@ -1,25 +1,20 @@
-getJasmineRequireObj().util = function(j$) {
+getJasmineRequireObj().util = function(j$, private$) {
+  'use strict';
+
   const util = {};
 
-  util.clone = function(obj) {
+  util.shallowCopy = function(obj) {
     if (Object.prototype.toString.apply(obj) === '[object Array]') {
       return obj.slice();
     }
 
-    const cloned = {};
-    for (const prop in obj) {
-      if (obj.hasOwnProperty(prop)) {
-        cloned[prop] = obj[prop];
-      }
-    }
-
-    return cloned;
+    return { ...obj };
   };
 
-  util.cloneArgs = function(args) {
+  util.shallowCopyArgs = function(args) {
     return Array.from(args).map(function(arg) {
-      const str = Object.prototype.toString.apply(arg),
-        primitives = /^\[object (Boolean|String|RegExp|Number)/;
+      const str = Object.prototype.toString.apply(arg);
+      const primitives = /^\[object (Boolean|String|RegExp|Number)/;
 
       // All falsey values are either primitives, `null`, or `undefined.
       if (!arg || str.match(primitives)) {
@@ -27,14 +22,14 @@ getJasmineRequireObj().util = function(j$) {
       } else if (str === '[object Date]') {
         return new Date(arg.valueOf());
       } else {
-        return j$.util.clone(arg);
+        return private$.util.shallowCopy(arg);
       }
     });
   };
 
   util.getPropertyDescriptor = function(obj, methodName) {
-    let descriptor,
-      proto = obj;
+    let descriptor;
+    let proto = obj;
 
     do {
       descriptor = Object.getOwnPropertyDescriptor(proto, methodName);
@@ -44,12 +39,8 @@ getJasmineRequireObj().util = function(j$) {
     return descriptor;
   };
 
-  util.has = function(obj, key) {
-    return Object.prototype.hasOwnProperty.call(obj, key);
-  };
-
   function callerFile() {
-    const trace = new j$.StackTrace(new Error());
+    const trace = new private$.StackTrace(new Error());
     return trace.frames[1].file;
   }
 
@@ -77,6 +68,17 @@ getJasmineRequireObj().util = function(j$) {
       throw new Error(
         (msgPrefix || 'Timeout value') + ' cannot be greater than ' + max
       );
+    }
+  };
+
+  util.assertReporterCloneable = function(v, msgPrefix) {
+    try {
+      // Reporter events are cloned internally via structuredClone, and it's
+      // common for reporters (including jasmine-browser-runner's) to JSON
+      // serialize them.
+      JSON.stringify(structuredClone(v));
+    } catch (e) {
+      throw new Error(`${msgPrefix} can't be cloned`, { cause: e });
     }
   };
 

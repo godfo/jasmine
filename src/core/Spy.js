@@ -1,4 +1,6 @@
-getJasmineRequireObj().Spy = function(j$) {
+getJasmineRequireObj().Spy = function(j$, private$) {
+  'use strict';
+
   const nextOrder = (function() {
     let order = 0;
 
@@ -38,22 +40,22 @@ getJasmineRequireObj().Spy = function(j$) {
     };
     const { originalFn, customStrategies, defaultStrategyFn } = optionals || {};
 
-    const numArgs = typeof originalFn === 'function' ? originalFn.length : 0,
-      wrapper = makeFunc(numArgs, function(context, args, invokeNew) {
-        return spy(context, args, invokeNew);
-      }),
-      strategyDispatcher = new SpyStrategyDispatcher(
-        {
-          name: name,
-          fn: originalFn,
-          getSpy: function() {
-            return wrapper;
-          },
-          customStrategies: customStrategies
+    const numArgs = typeof originalFn === 'function' ? originalFn.length : 0;
+    const wrapper = makeFunc(numArgs, function(context, args, invokeNew) {
+      return spy(context, args, invokeNew);
+    });
+    const strategyDispatcher = new SpyStrategyDispatcher(
+      {
+        name: name,
+        fn: originalFn,
+        getSpy: function() {
+          return wrapper;
         },
-        matchersUtil
-      ),
-      callTracker = new j$.CallTracker();
+        customStrategies: customStrategies
+      },
+      matchersUtil
+    );
+    const callTracker = new private$.CallTracker();
 
     function makeFunc(length, fn) {
       switch (length) {
@@ -145,9 +147,9 @@ getJasmineRequireObj().Spy = function(j$) {
   }
 
   function SpyStrategyDispatcher(strategyArgs, matchersUtil) {
-    const baseStrategy = new j$.SpyStrategy(strategyArgs);
+    const baseStrategy = new private$.SpyStrategy(strategyArgs);
     const argsStrategies = new StrategyDict(function() {
-      return new j$.SpyStrategy(strategyArgs);
+      return new private$.SpyStrategy(strategyArgs);
     }, matchersUtil);
 
     this.and = baseStrategy;

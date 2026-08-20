@@ -1,4 +1,6 @@
-getJasmineRequireObj().reporterEvents = function() {
+getJasmineRequireObj().reporterEvents = function(j$, private$) {
+  'use strict';
+
   /**
    * Used to tell Jasmine what optional or uncommonly implemented features
    * the reporter supports. If not specified, the defaults described in
@@ -50,7 +52,7 @@ getJasmineRequireObj().reporterEvents = function() {
      * `suiteStarted` is invoked when a `describe` starts to run
      * @function
      * @name Reporter#suiteStarted
-     * @param {SuiteResult} result Information about the individual {@link describe} being run
+     * @param {SuiteStartedEvent} result Information about the individual {@link describe} being run
      * @param {Function} [done] Used to specify to Jasmine that this callback is asynchronous and Jasmine should wait until it has been called before moving on.
      * @returns {} Optionally return a Promise instead of using `done` to cause Jasmine to wait for completion.
      * @see async
@@ -62,7 +64,7 @@ getJasmineRequireObj().reporterEvents = function() {
      * While jasmine doesn't require any specific functions, not defining a `suiteDone` will make it impossible for a reporter to know when a suite has failures in an `afterAll`.
      * @function
      * @name Reporter#suiteDone
-     * @param {SuiteResult} result
+     * @param {SuiteDoneEvent} result
      * @param {Function} [done] Used to specify to Jasmine that this callback is asynchronous and Jasmine should wait until it has been called before moving on.
      * @returns {} Optionally return a Promise instead of using `done` to cause Jasmine to wait for completion.
      * @see async
@@ -72,7 +74,7 @@ getJasmineRequireObj().reporterEvents = function() {
      * `specStarted` is invoked when an `it` starts to run (including associated `beforeEach` functions)
      * @function
      * @name Reporter#specStarted
-     * @param {SpecResult} result Information about the individual {@link it} being run
+     * @param {SpecStartedEvent} result Information about the individual {@link it} being run
      * @param {Function} [done] Used to specify to Jasmine that this callback is asynchronous and Jasmine should wait until it has been called before moving on.
      * @returns {} Optionally return a Promise instead of using `done` to cause Jasmine to wait for completion.
      * @see async
@@ -84,7 +86,7 @@ getJasmineRequireObj().reporterEvents = function() {
      * While jasmine doesn't require any specific functions, not defining a `specDone` will make it impossible for a reporter to know when a spec has failed.
      * @function
      * @name Reporter#specDone
-     * @param {SpecResult} result
+     * @param {SpecDoneEvent} result
      * @param {Function} [done] Used to specify to Jasmine that this callback is asynchronous and Jasmine should wait until it has been called before moving on.
      * @returns {} Optionally return a Promise instead of using `done` to cause Jasmine to wait for completion.
      * @see async

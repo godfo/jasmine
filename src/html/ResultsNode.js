@@ -1,4 +1,6 @@
-jasmineRequire.ResultsNode = function() {
+getJasmineHtmlRequireObj().ResultsNode = function() {
+  'use strict';
+
   function ResultsNode(result, type, parent) {
     this.result = result;
     this.type = type;

@@ -1,9 +1,11 @@
-getJasmineRequireObj().MapContaining = function(j$) {
+getJasmineRequireObj().MapContaining = function(j$, private$) {
+  'use strict';
+
   function MapContaining(sample) {
-    if (!j$.isMap(sample)) {
+    if (!private$.isMap(sample)) {
       throw new Error(
         'You must provide a map to `mapContaining`, not ' +
-          j$.basicPrettyPrinter_(sample)
+          private$.basicPrettyPrinter(sample)
       );
     }
 
@@ -11,7 +13,7 @@ getJasmineRequireObj().MapContaining = function(j$) {
   }
 
   MapContaining.prototype.asymmetricMatch = function(other, matchersUtil) {
-    if (!j$.isMap(other)) {
+    if (!private$.isMap(other)) {
       return false;
     }
 

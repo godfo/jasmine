@@ -1,6 +1,6 @@
 describe('toThrowError', function() {
   it('throws an error when the actual is not a function', function() {
-    const matcher = jasmineUnderTest.matchers.toThrowError();
+    const matcher = privateUnderTest.matchers.toThrowError();
 
     expect(function() {
       matcher.compare({});
@@ -8,10 +8,10 @@ describe('toThrowError', function() {
   });
 
   it('throws an error when the expected is not an Error, string, or RegExp', function() {
-    const matcher = jasmineUnderTest.matchers.toThrowError(),
-      fn = function() {
-        throw new Error('foo');
-      };
+    const matcher = privateUnderTest.matchers.toThrowError();
+    const fn = function() {
+      throw new Error('foo');
+    };
 
     expect(function() {
       matcher.compare(fn, 1);
@@ -19,10 +19,10 @@ describe('toThrowError', function() {
   });
 
   it('throws an error when the expected error type is not an Error', function() {
-    const matcher = jasmineUnderTest.matchers.toThrowError(),
-      fn = function() {
-        throw new Error('foo');
-      };
+    const matcher = privateUnderTest.matchers.toThrowError();
+    const fn = function() {
+      throw new Error('foo');
+    };
 
     expect(function() {
       matcher.compare(fn, void 0, 'foo');
@@ -30,10 +30,10 @@ describe('toThrowError', function() {
   });
 
   it('throws an error when the expected error message is not a string or RegExp', function() {
-    const matcher = jasmineUnderTest.matchers.toThrowError(),
-      fn = function() {
-        throw new Error('foo');
-      };
+    const matcher = privateUnderTest.matchers.toThrowError();
+    const fn = function() {
+      throw new Error('foo');
+    };
 
     expect(function() {
       matcher.compare(fn, Error, 1);
@@ -41,10 +41,10 @@ describe('toThrowError', function() {
   });
 
   it('fails if actual does not throw at all', function() {
-    const matcher = jasmineUnderTest.matchers.toThrowError(),
-      fn = function() {
-        return true;
-      };
+    const matcher = privateUnderTest.matchers.toThrowError();
+    const fn = function() {
+      return true;
+    };
 
     const result = matcher.compare(fn);
 
@@ -53,12 +53,12 @@ describe('toThrowError', function() {
   });
 
   it('fails if thrown is not an instanceof Error', function() {
-    const matcher = jasmineUnderTest.matchers.toThrowError({
-        pp: jasmineUnderTest.makePrettyPrinter()
-      }),
-      fn = function() {
-        throw 4;
-      };
+    const matcher = privateUnderTest.matchers.toThrowError({
+      pp: privateUnderTest.makePrettyPrinter()
+    });
+    const fn = function() {
+      throw 4;
+    };
 
     const result = matcher.compare(fn);
     expect(result.pass).toBe(false);
@@ -68,11 +68,12 @@ describe('toThrowError', function() {
   });
 
   describe('when error is from another frame', function() {
-    function isNotRunningInBrowser() {
-      return typeof document === 'undefined';
-    }
+    let iframe;
 
-    let iframe = null;
+    beforeEach(function() {
+      iframe = null;
+      specHelpers.requiresBrowser();
+    });
 
     afterEach(function() {
       if (iframe !== null) {
@@ -81,11 +82,7 @@ describe('toThrowError', function() {
     });
 
     it('passes if thrown is an instanceof Error regardless of global that contains its constructor', function() {
-      if (isNotRunningInBrowser()) {
-        pending('This test only runs in browsers.');
-      }
-
-      const matcher = jasmineUnderTest.matchers.toThrowError();
+      const matcher = privateUnderTest.matchers.toThrowError();
       iframe = document.body.appendChild(document.createElement('iframe'));
       iframe.src = 'about:blank';
       const iframeDocument = iframe.contentWindow.document;
@@ -103,12 +100,12 @@ describe('toThrowError', function() {
   });
 
   it('fails with the correct message if thrown is a falsy value', function() {
-    const matcher = jasmineUnderTest.matchers.toThrowError({
-        pp: jasmineUnderTest.makePrettyPrinter()
-      }),
-      fn = function() {
-        throw undefined;
-      };
+    const matcher = privateUnderTest.matchers.toThrowError({
+      pp: privateUnderTest.makePrettyPrinter()
+    });
+    const fn = function() {
+      throw undefined;
+    };
 
     const result = matcher.compare(fn);
     expect(result.pass).toBe(false);
@@ -118,10 +115,10 @@ describe('toThrowError', function() {
   });
 
   it('passes if thrown is a type of Error, but there is no expected error', function() {
-    const matcher = jasmineUnderTest.matchers.toThrowError(),
-      fn = function() {
-        throw new TypeError();
-      };
+    const matcher = privateUnderTest.matchers.toThrowError();
+    const fn = function() {
+      throw new TypeError();
+    };
 
     const result = matcher.compare(fn);
 
@@ -132,12 +129,12 @@ describe('toThrowError', function() {
   });
 
   it('passes if thrown is an Error and the expected is the same message', function() {
-    const matcher = jasmineUnderTest.matchers.toThrowError({
-        pp: jasmineUnderTest.makePrettyPrinter()
-      }),
-      fn = function() {
-        throw new Error('foo');
-      };
+    const matcher = privateUnderTest.matchers.toThrowError({
+      pp: privateUnderTest.makePrettyPrinter()
+    });
+    const fn = function() {
+      throw new Error('foo');
+    };
 
     const result = matcher.compare(fn, 'foo');
 
@@ -148,12 +145,12 @@ describe('toThrowError', function() {
   });
 
   it('fails if thrown is an Error and the expected is not the same message', function() {
-    const matcher = jasmineUnderTest.matchers.toThrowError({
-        pp: jasmineUnderTest.makePrettyPrinter()
-      }),
-      fn = function() {
-        throw new Error('foo');
-      };
+    const matcher = privateUnderTest.matchers.toThrowError({
+      pp: privateUnderTest.makePrettyPrinter()
+    });
+    const fn = function() {
+      throw new Error('foo');
+    };
 
     const result = matcher.compare(fn, 'bar');
 
@@ -164,12 +161,12 @@ describe('toThrowError', function() {
   });
 
   it('passes if thrown is an Error and the expected is a RegExp that matches the message', function() {
-    const matcher = jasmineUnderTest.matchers.toThrowError({
-        pp: jasmineUnderTest.makePrettyPrinter()
-      }),
-      fn = function() {
-        throw new Error('a long message');
-      };
+    const matcher = privateUnderTest.matchers.toThrowError({
+      pp: privateUnderTest.makePrettyPrinter()
+    });
+    const fn = function() {
+      throw new Error('a long message');
+    };
 
     const result = matcher.compare(fn, /long/);
 
@@ -180,12 +177,12 @@ describe('toThrowError', function() {
   });
 
   it('fails if thrown is an Error and the expected is a RegExp that does not match the message', function() {
-    const matcher = jasmineUnderTest.matchers.toThrowError({
-        pp: jasmineUnderTest.makePrettyPrinter()
-      }),
-      fn = function() {
-        throw new Error('a long message');
-      };
+    const matcher = privateUnderTest.matchers.toThrowError({
+      pp: privateUnderTest.makePrettyPrinter()
+    });
+    const fn = function() {
+      throw new Error('a long message');
+    };
 
     const result = matcher.compare(fn, /foo/);
 
@@ -196,10 +193,10 @@ describe('toThrowError', function() {
   });
 
   it('passes if thrown is an Error and the expected the same Error', function() {
-    const matcher = jasmineUnderTest.matchers.toThrowError(),
-      fn = function() {
-        throw new Error();
-      };
+    const matcher = privateUnderTest.matchers.toThrowError();
+    const fn = function() {
+      throw new Error();
+    };
 
     const result = matcher.compare(fn, Error);
 
@@ -208,13 +205,13 @@ describe('toThrowError', function() {
   });
 
   it('passes if thrown is a custom error that takes arguments and the expected is the same error', function() {
-    const matcher = jasmineUnderTest.matchers.toThrowError(),
-      CustomError = function CustomError(arg) {
-        arg.x;
-      },
-      fn = function() {
-        throw new CustomError({ x: 1 });
-      };
+    const matcher = privateUnderTest.matchers.toThrowError();
+    const CustomError = function CustomError(arg) {
+      arg.x;
+    };
+    const fn = function() {
+      throw new CustomError({ x: 1 });
+    };
 
     CustomError.prototype = new Error();
 
@@ -227,10 +224,10 @@ describe('toThrowError', function() {
   });
 
   it('fails if thrown is an Error and the expected is a different Error', function() {
-    const matcher = jasmineUnderTest.matchers.toThrowError(),
-      fn = function() {
-        throw new Error();
-      };
+    const matcher = privateUnderTest.matchers.toThrowError();
+    const fn = function() {
+      throw new Error();
+    };
 
     const result = matcher.compare(fn, TypeError);
 
@@ -242,13 +239,13 @@ describe('toThrowError', function() {
 
   it('passes if thrown is a type of Error and it is equal to the expected Error and message', function() {
     const matchersUtil = {
-        equals: jasmine.createSpy('delegated-equal').and.returnValue(true),
-        pp: jasmineUnderTest.makePrettyPrinter()
-      },
-      matcher = jasmineUnderTest.matchers.toThrowError(matchersUtil),
-      fn = function() {
-        throw new TypeError('foo');
-      };
+      equals: jasmine.createSpy('delegated-equal').and.returnValue(true),
+      pp: privateUnderTest.makePrettyPrinter()
+    };
+    const matcher = privateUnderTest.matchers.toThrowError(matchersUtil);
+    const fn = function() {
+      throw new TypeError('foo');
+    };
 
     const result = matcher.compare(fn, TypeError, 'foo');
 
@@ -260,16 +257,16 @@ describe('toThrowError', function() {
 
   it('passes if thrown is a custom error that takes arguments and it is equal to the expected custom error and message', function() {
     const matchersUtil = {
-        equals: jasmine.createSpy('delegated-equal').and.returnValue(true),
-        pp: jasmineUnderTest.makePrettyPrinter()
-      },
-      matcher = jasmineUnderTest.matchers.toThrowError(matchersUtil),
-      CustomError = function CustomError(arg) {
-        this.message = arg.message;
-      },
-      fn = function() {
-        throw new CustomError({ message: 'foo' });
-      };
+      equals: jasmine.createSpy('delegated-equal').and.returnValue(true),
+      pp: privateUnderTest.makePrettyPrinter()
+    };
+    const matcher = privateUnderTest.matchers.toThrowError(matchersUtil);
+    const CustomError = function CustomError(arg) {
+      this.message = arg.message;
+    };
+    const fn = function() {
+      throw new CustomError({ message: 'foo' });
+    };
 
     CustomError.prototype = new Error();
 
@@ -284,13 +281,13 @@ describe('toThrowError', function() {
   describe('with a string', function() {
     it('fails if thrown is a type of Error and the expected is a different Error', function() {
       const matchersUtil = {
-          equals: jasmine.createSpy('delegated-equal').and.returnValue(false),
-          pp: jasmineUnderTest.makePrettyPrinter()
-        },
-        matcher = jasmineUnderTest.matchers.toThrowError(matchersUtil),
-        fn = function() {
-          throw new TypeError('foo');
-        };
+        equals: jasmine.createSpy('delegated-equal').and.returnValue(false),
+        pp: privateUnderTest.makePrettyPrinter()
+      };
+      const matcher = privateUnderTest.matchers.toThrowError(matchersUtil);
+      const fn = function() {
+        throw new TypeError('foo');
+      };
 
       const result = matcher.compare(fn, TypeError, 'bar');
 
@@ -304,13 +301,13 @@ describe('toThrowError', function() {
   describe('with a regex', function() {
     it('fails if thrown is a type of Error and the expected is a different Error', function() {
       const matchersUtil = {
-          equals: jasmine.createSpy('delegated-equal').and.returnValue(false),
-          pp: jasmineUnderTest.makePrettyPrinter()
-        },
-        matcher = jasmineUnderTest.matchers.toThrowError(matchersUtil),
-        fn = function() {
-          throw new TypeError('foo');
-        };
+        equals: jasmine.createSpy('delegated-equal').and.returnValue(false),
+        pp: privateUnderTest.makePrettyPrinter()
+      };
+      const matcher = privateUnderTest.matchers.toThrowError(matchersUtil);
+      const fn = function() {
+        throw new TypeError('foo');
+      };
 
       const result = matcher.compare(fn, TypeError, /bar/);
 
@@ -323,13 +320,13 @@ describe('toThrowError', function() {
 
   it('passes if thrown is a type of Error and has the same type as the expected Error and the message matches the expected message', function() {
     const matchersUtil = {
-        equals: jasmine.createSpy('delegated-equal').and.returnValue(true),
-        pp: jasmineUnderTest.makePrettyPrinter()
-      },
-      matcher = jasmineUnderTest.matchers.toThrowError(matchersUtil),
-      fn = function() {
-        throw new TypeError('foo');
-      };
+      equals: jasmine.createSpy('delegated-equal').and.returnValue(true),
+      pp: privateUnderTest.makePrettyPrinter()
+    };
+    const matcher = privateUnderTest.matchers.toThrowError(matchersUtil);
+    const fn = function() {
+      throw new TypeError('foo');
+    };
 
     const result = matcher.compare(fn, TypeError, /foo/);
 

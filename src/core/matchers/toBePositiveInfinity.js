@@ -1,4 +1,6 @@
-getJasmineRequireObj().toBePositiveInfinity = function(j$) {
+getJasmineRequireObj().toBePositiveInfinity = function(j$, private$) {
+  'use strict';
+
   /**
    * {@link expect} the actual value to be `Infinity` (infinity).
    * @function

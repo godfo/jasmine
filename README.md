@@ -4,8 +4,6 @@
 
 Jasmine is a Behavior Driven Development testing framework for JavaScript. It does not rely on browsers, DOM, or any JavaScript framework. Thus it's suited for websites, [Node.js](http://nodejs.org) projects, or anywhere that JavaScript can run.
 
-Upgrading from Jasmine 4.x? Check out the [upgrade guide](https://jasmine.github.io/tutorials/upgrading_to_Jasmine_5.0).
-
 ## Contributing
 
 Please read the [contributors' guide](https://github.com/jasmine/jasmine/blob/main/.github/CONTRIBUTING.md).
@@ -29,10 +27,10 @@ Microsoft Edge) as well as Node.
 
 | Environment       | Supported versions               |
 |-------------------|----------------------------------|
-| Node              | 18.20.5+*, 20, 22, 24            |
-| Safari            | 16*, 17*                         |
+| Node              | 20*, 22, 24, 26                  |
+| Safari            | 26*                              |
 | Chrome            | Evergreen                        |
-| Firefox           | Evergreen, 102*, 115*, 128*, 140 |
+| Firefox           | Evergreen, 140                   |
 | Edge              | Evergreen                        |
 
 For evergreen browsers, each version of Jasmine is tested against the version of the browser that is available to us
@@ -60,5 +58,5 @@ To find out what environments work with a particular Jasmine release, see the [r
 * Sheel Choksi
 
 Copyright (c) 2008-2019 Pivotal Labs<br>
-Copyright (c) 2008-2025 The Jasmine developers<br>
+Copyright (c) 2008-2026 The Jasmine developers<br>
 This software is licensed under the [MIT License](https://github.com/jasmine/jasmine/blob/main/LICENSE).

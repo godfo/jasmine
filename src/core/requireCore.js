@@ -1,5 +1,6 @@
-// eslint-disable-next-line no-unused-vars,no-var
-var getJasmineRequireObj = (function(jasmineGlobal) {
+// eslint-disable-next-line no-unused-vars
+const getJasmineRequireObj = (function() {
+  'use strict';
   let jasmineRequire;
 
   if (
@@ -7,117 +8,137 @@ var getJasmineRequireObj = (function(jasmineGlobal) {
     module.exports &&
     typeof exports !== 'undefined'
   ) {
-    if (typeof global !== 'undefined') {
-      jasmineGlobal = global;
-    } else {
-      jasmineGlobal = {};
-    }
+    // Node
     jasmineRequire = exports;
   } else {
-    if (
-      typeof window !== 'undefined' &&
-      typeof window.toString === 'function' &&
-      window.toString() === '[object GjsGlobal]'
-    ) {
-      jasmineGlobal = window;
-    }
-    jasmineRequire = jasmineGlobal.jasmineRequire = {};
+    // Browser
+    jasmineRequire = {};
   }
 
   function getJasmineRequire() {
     return jasmineRequire;
   }
 
+  const loadedAsBrowserEsm =
+    globalThis.document && !globalThis.document.currentScript;
+
   getJasmineRequire().core = function(jRequire) {
+    const private$ = {};
     const j$ = {};
 
-    jRequire.base(j$, jasmineGlobal);
-    j$.util = jRequire.util(j$);
-    j$.errors = jRequire.errors();
-    j$.formatErrorMsg = jRequire.formatErrorMsg();
-    j$.AllOf = jRequire.AllOf(j$);
-    j$.Any = jRequire.Any(j$);
-    j$.Anything = jRequire.Anything(j$);
-    j$.CallTracker = jRequire.CallTracker(j$);
-    j$.MockDate = jRequire.MockDate(j$);
-    j$.getClearStack = jRequire.clearStack(j$);
-    j$.Clock = jRequire.Clock();
-    j$.DelayedFunctionScheduler = jRequire.DelayedFunctionScheduler(j$);
-    j$.Deprecator = jRequire.Deprecator(j$);
-    j$.Configuration = jRequire.Configuration(j$);
-    j$.Env = jRequire.Env(j$);
-    j$.StackTrace = jRequire.StackTrace(j$);
-    j$.ExceptionFormatter = jRequire.ExceptionFormatter(j$);
-    j$.ExpectationFilterChain = jRequire.ExpectationFilterChain();
-    j$.Expector = jRequire.Expector(j$);
-    j$.Expectation = jRequire.Expectation(j$);
-    j$.buildExpectationResult = jRequire.buildExpectationResult(j$);
-    j$.JsApiReporter = jRequire.JsApiReporter(j$);
-    j$.makePrettyPrinter = jRequire.makePrettyPrinter(j$);
-    j$.basicPrettyPrinter_ = j$.makePrettyPrinter();
-    j$.MatchersUtil = jRequire.MatchersUtil(j$);
-    j$.ObjectContaining = jRequire.ObjectContaining(j$);
-    j$.ArrayContaining = jRequire.ArrayContaining(j$);
-    j$.ArrayWithExactContents = jRequire.ArrayWithExactContents(j$);
-    j$.MapContaining = jRequire.MapContaining(j$);
-    j$.SetContaining = jRequire.SetContaining(j$);
-    j$.QueueRunner = jRequire.QueueRunner(j$);
-    j$.NeverSkipPolicy = jRequire.NeverSkipPolicy(j$);
-    j$.SkipAfterBeforeAllErrorPolicy = jRequire.SkipAfterBeforeAllErrorPolicy(
+    jRequire.base(j$, private$, globalThis);
+    private$.util = jRequire.util(j$, private$);
+    private$.errors = jRequire.errors();
+    private$.formatErrorMsg = jRequire.formatErrorMsg(j$, private$);
+    private$.AllOf = jRequire.AllOf(j$, private$);
+    private$.Any = jRequire.Any(j$, private$);
+    private$.Anything = jRequire.Anything(j$, private$);
+    private$.CallTracker = jRequire.CallTracker(j$, private$);
+    private$.MockDate = jRequire.MockDate(j$, private$);
+    private$.getStackClearer = jRequire.StackClearer(j$, private$);
+    private$.Clock = jRequire.Clock(j$, private$);
+    private$.DelayedFunctionScheduler = jRequire.DelayedFunctionScheduler(
+      j$,
+      private$
+    );
+    private$.Deprecator = jRequire.Deprecator(j$, private$);
+    private$.Configuration = jRequire.Configuration(j$, private$);
+    private$.Env = jRequire.Env(j$, private$);
+    private$.StackTrace = jRequire.StackTrace(j$, private$);
+    private$.ExceptionFormatter = jRequire.ExceptionFormatter(j$, private$);
+    private$.ExpectationFilterChain = jRequire.ExpectationFilterChain();
+    private$.Expector = jRequire.Expector(j$, private$);
+    private$.Expectation = jRequire.Expectation(j$, private$);
+    private$.buildExpectationResult = jRequire.buildExpectationResult(
+      j$,
+      private$
+    );
+    private$.makePrettyPrinter = jRequire.makePrettyPrinter(j$, private$);
+    private$.basicPrettyPrinter = private$.makePrettyPrinter();
+    private$.MatchersUtil = jRequire.MatchersUtil(j$, private$);
+    private$.ObjectContaining = jRequire.ObjectContaining(j$, private$);
+    private$.ArrayContaining = jRequire.ArrayContaining(j$, private$);
+    private$.ArrayWithExactContents = jRequire.ArrayWithExactContents(
+      j$,
+      private$
+    );
+    private$.MapContaining = jRequire.MapContaining(j$, private$);
+    private$.SetContaining = jRequire.SetContaining(j$, private$);
+    private$.QueueRunner = jRequire.QueueRunner(j$, private$);
+    private$.NeverSkipPolicy = jRequire.NeverSkipPolicy(j$, private$);
+    private$.SkipAfterBeforeAllErrorPolicy = jRequire.SkipAfterBeforeAllErrorPolicy(
       j$
     );
-    j$.CompleteOnFirstErrorSkipPolicy = jRequire.CompleteOnFirstErrorSkipPolicy(
+    private$.CompleteOnFirstErrorSkipPolicy = jRequire.CompleteOnFirstErrorSkipPolicy(
       j$
     );
-    j$.reporterEvents = jRequire.reporterEvents(j$);
-    j$.ReportDispatcher = jRequire.ReportDispatcher(j$);
-    j$.ParallelReportDispatcher = jRequire.ParallelReportDispatcher(j$);
-    j$.CurrentRunableTracker = jRequire.CurrentRunableTracker();
-    j$.RunableResources = jRequire.RunableResources(j$);
-    j$.Runner = jRequire.Runner(j$);
-    j$.Spec = jRequire.Spec(j$);
-    j$.Spy = jRequire.Spy(j$);
-    j$.SpyFactory = jRequire.SpyFactory(j$);
-    j$.SpyRegistry = jRequire.SpyRegistry(j$);
-    j$.SpyStrategy = jRequire.SpyStrategy(j$);
-    j$.StringMatching = jRequire.StringMatching(j$);
-    j$.StringContaining = jRequire.StringContaining(j$);
-    j$.UserContext = jRequire.UserContext(j$);
-    j$.Suite = jRequire.Suite(j$);
-    j$.SuiteBuilder = jRequire.SuiteBuilder(j$);
+    private$.reporterEvents = jRequire.reporterEvents(j$, private$);
+    private$.ReportDispatcher = jRequire.ReportDispatcher(j$, private$);
+    j$.ParallelReportDispatcher = jRequire.ParallelReportDispatcher(
+      j$,
+      private$
+    );
+    private$.CurrentRunableTracker = jRequire.CurrentRunableTracker();
+    private$.RunableResources = jRequire.RunableResources(j$, private$);
+    private$.Runner = jRequire.Runner(j$, private$);
+    private$.Spec = jRequire.Spec(j$, private$);
+    private$.Spy = jRequire.Spy(j$, private$);
+    private$.SpyFactory = jRequire.SpyFactory(j$, private$);
+    private$.SpyRegistry = jRequire.SpyRegistry(j$, private$);
+    private$.SpyStrategy = jRequire.SpyStrategy(j$, private$);
+    private$.StringMatching = jRequire.StringMatching(j$, private$);
+    private$.StringContaining = jRequire.StringContaining(j$, private$);
+    private$.UserContext = jRequire.UserContext(j$, private$);
+    private$.Suite = jRequire.Suite(j$, private$);
+    private$.SuiteBuilder = jRequire.SuiteBuilder(j$, private$);
     j$.Timer = jRequire.Timer();
-    j$.TreeProcessor = jRequire.TreeProcessor(j$);
-    j$.TreeRunner = jRequire.TreeRunner(j$);
+    private$.TreeProcessor = jRequire.TreeProcessor(j$, private$);
+    private$.TreeRunner = jRequire.TreeRunner(j$, private$);
     j$.version = jRequire.version();
-    j$.Order = jRequire.Order();
-    j$.DiffBuilder = jRequire.DiffBuilder(j$);
-    j$.NullDiffBuilder = jRequire.NullDiffBuilder(j$);
-    j$.ObjectPath = jRequire.ObjectPath(j$);
-    j$.MismatchTree = jRequire.MismatchTree(j$);
+    private$.Order = jRequire.Order();
+    private$.DiffBuilder = jRequire.DiffBuilder(j$, private$);
+    private$.NullDiffBuilder = jRequire.NullDiffBuilder(j$, private$);
+    private$.ObjectPath = jRequire.ObjectPath(j$, private$);
+    private$.MismatchTree = jRequire.MismatchTree(j$, private$);
+    private$.GlobalErrors = jRequire.GlobalErrors(j$, private$);
+    private$.Truthy = jRequire.Truthy(j$, private$);
+    private$.Falsy = jRequire.Falsy(j$, private$);
+    private$.Empty = jRequire.Empty(j$, private$);
+    private$.NotEmpty = jRequire.NotEmpty(j$, private$);
+    private$.Is = jRequire.Is(j$, private$);
 
-    // zone.js tries to monkey patch GlobalErrors in a way that is either a
-    // no-op or causes Jasmine to crash, depending on whether it's done before
-    // or after env creation. Prevent that.
-    const GlobalErrors = jRequire.GlobalErrors(j$);
-    Object.defineProperty(j$, 'GlobalErrors', {
-      enumerable: true,
-      configurable: false,
-      get() {
-        return GlobalErrors;
-      },
-      set() {}
-    });
+    private$.matchers = jRequire.requireMatchers(jRequire, j$, private$);
+    private$.asyncMatchers = jRequire.requireAsyncMatchers(
+      jRequire,
+      j$,
+      private$
+    );
 
-    j$.Truthy = jRequire.Truthy(j$);
-    j$.Falsy = jRequire.Falsy(j$);
-    j$.Empty = jRequire.Empty(j$);
-    j$.NotEmpty = jRequire.NotEmpty(j$);
-    j$.Is = jRequire.Is(j$);
+    private$.loadedAsBrowserEsm = loadedAsBrowserEsm;
 
-    j$.matchers = jRequire.requireMatchers(jRequire, j$);
-    j$.asyncMatchers = jRequire.requireAsyncMatchers(jRequire, j$);
+    // Prevent monkey patching of existing properties but allow adding new ones.
+    // jasmine-html.js needs to be able to add to the jasmine namespace.
+    // jasmine-ajax also installs itself this way.
+    const writeable = [
+      'DEFAULT_TIMEOUT_INTERVAL',
+      'MAX_PRETTY_PRINT_ARRAY_LENGTH',
+      'MAX_PRETTY_PRINT_CHARS',
+      'MAX_PRETTY_PRINT_DEPTH'
+    ];
+    const descriptors = Object.getOwnPropertyDescriptors(j$);
 
-    return j$;
+    for (const [k, d] of Object.entries(descriptors)) {
+      if (!writeable.includes(k)) {
+        Object.defineProperty(j$, k, {
+          value: d.value,
+          enumerable: d.enumerable,
+          configurable: false,
+          writable: false
+        });
+      }
+    }
+
+    return { jasmine: j$, private: private$ };
   };
 
   return getJasmineRequire;

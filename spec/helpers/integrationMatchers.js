@@ -4,9 +4,10 @@
       toHaveFailedExpectationsForRunnable: function() {
         return {
           compare: function(actual, fullName, expectedFailures) {
-            let foundRunnable = false,
-              expectations = true,
-              foundFailures = [];
+            let foundRunnable = false;
+            let expectations = true;
+            let foundFailures = [];
+
             for (let i = 0; i < actual.calls.count(); i++) {
               const args = actual.calls.argsFor(i)[0];
 
@@ -42,9 +43,9 @@
                 : 'Expected runnable "' +
                   fullName +
                   '" to have failures ' +
-                  jasmine.basicPrettyPrinter_(expectedFailures) +
+                  jasmine.pp(expectedFailures) +
                   ' but it had ' +
-                  jasmine.basicPrettyPrinter_(foundFailures)
+                  jasmine.pp(foundFailures)
             };
           }
         };

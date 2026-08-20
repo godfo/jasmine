@@ -1,20 +1,21 @@
-/* eslint no-console: 0 */
 describe('Deprecator', function() {
   describe('#deprecate', function() {
     beforeEach(function() {
-      spyOn(console, 'error');
+      spyOn(privateUnderTest, 'consoleError');
     });
 
     it('logs the mesage without context when the runnable is the top suite', function() {
       const runnable = { addDeprecationWarning: function() {} };
-      const deprecator = new jasmineUnderTest.Deprecator(runnable);
+      const deprecator = new privateUnderTest.Deprecator(runnable);
       deprecator.verboseDeprecations(true);
 
       deprecator.addDeprecationWarning(runnable, 'the message', {
         omitStackTrace: true
       });
 
-      expect(console.error).toHaveBeenCalledWith('DEPRECATION: the message');
+      expect(privateUnderTest.consoleError).toHaveBeenCalledWith(
+        'DEPRECATION: the message'
+      );
     });
 
     it('logs the message in a descendant suite', function() {
@@ -25,14 +26,14 @@ describe('Deprecator', function() {
         },
         children: []
       };
-      const deprecator = new jasmineUnderTest.Deprecator({});
+      const deprecator = new privateUnderTest.Deprecator({});
       deprecator.verboseDeprecations(true);
 
       deprecator.addDeprecationWarning(runnable, 'the message', {
         omitStackTrace: true
       });
 
-      expect(console.error).toHaveBeenCalledWith(
+      expect(privateUnderTest.consoleError).toHaveBeenCalledWith(
         'DEPRECATION: the message (in suite: the suite)'
       );
     });
@@ -44,14 +45,14 @@ describe('Deprecator', function() {
           return 'the spec';
         }
       };
-      const deprecator = new jasmineUnderTest.Deprecator({});
+      const deprecator = new privateUnderTest.Deprecator({});
       deprecator.verboseDeprecations(true);
 
       deprecator.addDeprecationWarning(runnable, 'the message', {
         omitStackTrace: true
       });
 
-      expect(console.error).toHaveBeenCalledWith(
+      expect(privateUnderTest.consoleError).toHaveBeenCalledWith(
         'DEPRECATION: the message (in spec: the spec)'
       );
     });
@@ -61,7 +62,7 @@ describe('Deprecator', function() {
         'addDeprecationWarning',
         'getFullName'
       ]);
-      const deprecator = new jasmineUnderTest.Deprecator(topSuite);
+      const deprecator = new privateUnderTest.Deprecator(topSuite);
       const runnable = jasmine.createSpyObj('spec', [
         'addDeprecationWarning',
         'getFullName'
@@ -78,10 +79,10 @@ describe('Deprecator', function() {
         })
       );
       expect(runnable.addDeprecationWarning).not.toHaveBeenCalled();
-      expect(console.error).toHaveBeenCalledWith(
+      expect(privateUnderTest.consoleError).toHaveBeenCalledWith(
         jasmine.stringMatching(/the message/)
       );
-      expect(console.error).not.toHaveBeenCalledWith(
+      expect(privateUnderTest.consoleError).not.toHaveBeenCalledWith(
         jasmine.stringMatching(/a spec/)
       );
     });
@@ -105,7 +106,7 @@ describe('Deprecator', function() {
     });
 
     it('emits the deprecation only once when verboseDeprecations is not set', function() {
-      const deprecator = new jasmineUnderTest.Deprecator({});
+      const deprecator = new privateUnderTest.Deprecator({});
       const runnable1 = jasmine.createSpyObj('runnable1', [
         'addDeprecationWarning',
         'getFullName'
@@ -124,7 +125,7 @@ describe('Deprecator', function() {
     });
 
     it('emits the deprecation only once when verboseDeprecations is false', function() {
-      const deprecator = new jasmineUnderTest.Deprecator({});
+      const deprecator = new privateUnderTest.Deprecator({});
       const runnable1 = jasmine.createSpyObj('runnable1', [
         'addDeprecationWarning',
         'getFullName'
@@ -144,7 +145,7 @@ describe('Deprecator', function() {
     });
 
     it('emits the deprecation for each call when verboseDeprecations is true', function() {
-      const deprecator = new jasmineUnderTest.Deprecator({});
+      const deprecator = new privateUnderTest.Deprecator({});
       const runnable1 = jasmine.createSpyObj('runnable1', [
         'addDeprecationWarning',
         'getFullName'
@@ -164,7 +165,7 @@ describe('Deprecator', function() {
     });
 
     it('includes a note about verboseDeprecations', function() {
-      const deprecator = new jasmineUnderTest.Deprecator({});
+      const deprecator = new privateUnderTest.Deprecator({});
       const runnable = jasmine.createSpyObj('runnable', [
         'addDeprecationWarning',
         'getFullName'
@@ -176,14 +177,14 @@ describe('Deprecator', function() {
       expect(
         runnable.addDeprecationWarning.calls.argsFor(0)[0].message
       ).toContain(verboseDeprecationsNote());
-      expect(console.error).toHaveBeenCalledTimes(1);
-      expect(console.error.calls.argsFor(0)[0]).toContain(
+      expect(privateUnderTest.consoleError).toHaveBeenCalledTimes(1);
+      expect(privateUnderTest.consoleError.calls.argsFor(0)[0]).toContain(
         verboseDeprecationsNote()
       );
     });
 
     it('omits the note about verboseDeprecations when verboseDeprecations is true', function() {
-      const deprecator = new jasmineUnderTest.Deprecator({});
+      const deprecator = new privateUnderTest.Deprecator({});
       const runnable = jasmine.createSpyObj('runnable', [
         'addDeprecationWarning',
         'getFullName'
@@ -196,8 +197,8 @@ describe('Deprecator', function() {
       expect(
         runnable.addDeprecationWarning.calls.argsFor(0)[0].message
       ).not.toContain(verboseDeprecationsNote());
-      expect(console.error).toHaveBeenCalledTimes(1);
-      expect(console.error.calls.argsFor(0)[0]).not.toContain(
+      expect(privateUnderTest.consoleError).toHaveBeenCalledTimes(1);
+      expect(privateUnderTest.consoleError.calls.argsFor(0)[0]).not.toContain(
         verboseDeprecationsNote()
       );
     });
@@ -207,7 +208,7 @@ describe('Deprecator', function() {
       // to report their own deprecations through Jasmine. See
       // <https://github.com/jasmine/jasmine/pull/1498>.
       it('passes the error through unchanged', function() {
-        const deprecator = new jasmineUnderTest.Deprecator({});
+        const deprecator = new privateUnderTest.Deprecator({});
         const runnable = jasmine.createSpyObj('runnable', [
           'addDeprecationWarning',
           'getFullName'
@@ -230,15 +231,17 @@ describe('Deprecator', function() {
         expect(runnable.addDeprecationWarning.calls.argsFor(0)[0].stack).toBe(
           originalStack
         );
-        expect(console.error).toHaveBeenCalledTimes(1);
-        expect(console.error.calls.argsFor(0)[0].message).toEqual(
-          'the deprecation'
+        expect(privateUnderTest.consoleError).toHaveBeenCalledTimes(1);
+        expect(
+          privateUnderTest.consoleError.calls.argsFor(0)[0].message
+        ).toEqual('the deprecation');
+        expect(privateUnderTest.consoleError.calls.argsFor(0)[0].stack).toEqual(
+          originalStack
         );
-        expect(console.error.calls.argsFor(0)[0].stack).toEqual(originalStack);
       });
 
       it('reports the deprecation every time, regardless of config.verboseDeprecations', function() {
-        const deprecator = new jasmineUnderTest.Deprecator({});
+        const deprecator = new privateUnderTest.Deprecator({});
         const runnable = jasmine.createSpyObj('runnable', [
           'addDeprecationWarning',
           'getFullName'
@@ -255,11 +258,11 @@ describe('Deprecator', function() {
         deprecator.addDeprecationWarning(runnable, deprecation);
 
         expect(runnable.addDeprecationWarning).toHaveBeenCalledTimes(2);
-        expect(console.error).toHaveBeenCalledTimes(2);
+        expect(privateUnderTest.consoleError).toHaveBeenCalledTimes(2);
       });
 
       it('omits the note about verboseDeprecations', function() {
-        const deprecator = new jasmineUnderTest.Deprecator({});
+        const deprecator = new privateUnderTest.Deprecator({});
         const runnable = jasmine.createSpyObj('runnable', [
           'addDeprecationWarning',
           'getFullName'
@@ -278,8 +281,8 @@ describe('Deprecator', function() {
         expect(
           runnable.addDeprecationWarning.calls.argsFor(0)[0].message
         ).not.toContain(verboseDeprecationsNote());
-        expect(console.error).toHaveBeenCalledTimes(1);
-        expect(console.error.calls.argsFor(0)[0]).not.toContain(
+        expect(privateUnderTest.consoleError).toHaveBeenCalledTimes(1);
+        expect(privateUnderTest.consoleError.calls.argsFor(0)[0]).not.toContain(
           verboseDeprecationsNote()
         );
       });
@@ -293,7 +296,7 @@ describe('Deprecator', function() {
     }
 
     function testStackTrace(options) {
-      const deprecator = new jasmineUnderTest.Deprecator({});
+      const deprecator = new privateUnderTest.Deprecator({});
       const runnable = jasmine.createSpyObj('runnable', [
         'addDeprecationWarning',
         'getFullName'
@@ -305,13 +308,17 @@ describe('Deprecator', function() {
         message: jasmine.stringMatching(/^the message/),
         omitStackTrace: false
       });
-      expect(console.error).toHaveBeenCalledTimes(1);
-      expect(console.error.calls.argsFor(0)[0]).toContain('the message');
-      expect(console.error.calls.argsFor(0)[0]).toContain('DeprecatorSpec.js');
+      expect(privateUnderTest.consoleError).toHaveBeenCalledTimes(1);
+      expect(privateUnderTest.consoleError.calls.argsFor(0)[0]).toContain(
+        'the message'
+      );
+      expect(privateUnderTest.consoleError.calls.argsFor(0)[0]).toContain(
+        'DeprecatorSpec.js'
+      );
     }
 
     function testNoStackTrace(options) {
-      const deprecator = new jasmineUnderTest.Deprecator({});
+      const deprecator = new privateUnderTest.Deprecator({});
       const runnable = jasmine.createSpyObj('runnable', [
         'addDeprecationWarning',
         'getFullName'

@@ -1,9 +1,11 @@
-getJasmineRequireObj().QueueRunner = function(j$) {
+getJasmineRequireObj().QueueRunner = function(j$, private$) {
+  'use strict';
+
   let nextid = 1;
 
   function StopExecutionError() {}
   StopExecutionError.prototype = new Error();
-  j$.StopExecutionError = StopExecutionError;
+  private$.StopExecutionError = StopExecutionError;
 
   function once(fn, onTwice) {
     let called = false;
@@ -22,8 +24,7 @@ getJasmineRequireObj().QueueRunner = function(j$) {
   }
 
   function fallbackOnMultipleDone() {
-    // eslint-disable-next-line no-console
-    console.error(
+    private$.consoleError(
       new Error(
         "An asynchronous function called its 'done' " +
           'callback more than once, in a QueueRunner without a onMultipleDone ' +
@@ -49,14 +50,14 @@ getJasmineRequireObj().QueueRunner = function(j$) {
     }
 
     this.onComplete = attrs.onComplete || emptyFn;
-    this.clearStack =
-      attrs.clearStack ||
-      function(fn) {
+    this.clearStack = attrs.clearStack || {
+      clearStack(fn) {
         fn();
-      };
+      }
+    };
     this.onException = attrs.onException || emptyFn;
     this.onMultipleDone = attrs.onMultipleDone || fallbackOnMultipleDone;
-    this.userContext = attrs.userContext || new j$.UserContext();
+    this.userContext = attrs.userContext || new private$.UserContext();
     this.timeout = attrs.timeout || {
       setTimeout: setTimeout,
       clearTimeout: clearTimeout
@@ -67,7 +68,7 @@ getJasmineRequireObj().QueueRunner = function(j$) {
       popListener: emptyFn
     };
 
-    const SkipPolicy = attrs.SkipPolicy || j$.NeverSkipPolicy;
+    const SkipPolicy = attrs.SkipPolicy || private$.NeverSkipPolicy;
     this.skipPolicy_ = new SkipPolicy(this.queueableFns);
     this.errored_ = false;
 
@@ -77,8 +78,8 @@ getJasmineRequireObj().QueueRunner = function(j$) {
   }
 
   QueueRunner.prototype.execute = function() {
-    this.handleFinalError = (error, event) => {
-      this.onException(errorOrMsgForGlobalError(error, event));
+    this.handleFinalError = error => {
+      this.onException(error);
     };
     this.globalErrors.pushListener(this.handleFinalError);
     this.run(0);
@@ -108,8 +109,8 @@ getJasmineRequireObj().QueueRunner = function(j$) {
       this.recordError_(iterativeIndex);
     };
 
-    function handleError(error, event) {
-      onException(errorOrMsgForGlobalError(error, event));
+    function handleError(error) {
+      onException(error);
     }
     const cleanup = once(() => {
       if (timeoutId !== void 0) {
@@ -147,8 +148,7 @@ getJasmineRequireObj().QueueRunner = function(j$) {
           // Any error we catch here is probably due to a bug in Jasmine,
           // and it's not likely to end up anywhere useful if we let it
           // propagate. Log it so it can at least show up when debugging.
-          // eslint-disable-next-line no-console
-          console.error(error);
+          private$.consoleError(error);
         }
       }
     );
@@ -190,7 +190,7 @@ getJasmineRequireObj().QueueRunner = function(j$) {
       if (queueableFn.fn.length === 0) {
         maybeThenable = queueableFn.fn.call(this.userContext);
 
-        if (maybeThenable && j$.isFunction_(maybeThenable.then)) {
+        if (maybeThenable && private$.isFunction(maybeThenable.then)) {
           maybeThenable.then(
             wrapInPromiseResolutionHandler(next),
             onPromiseRejection
@@ -233,7 +233,7 @@ getJasmineRequireObj().QueueRunner = function(j$) {
       }
     }
 
-    this.clearStack(() => {
+    this.clearStack.clearStack(() => {
       this.globalErrors.popListener(this.handleFinalError);
 
       if (this.errored_) {
@@ -260,11 +260,11 @@ getJasmineRequireObj().QueueRunner = function(j$) {
   };
 
   QueueRunner.prototype.diagnoseConflictingAsync_ = function(fn, retval) {
-    if (retval && j$.isFunction_(retval.then)) {
+    if (retval && private$.isFunction(retval.then)) {
       // Issue a warning that matches the user's code.
       // Omit the stack trace because there's almost certainly no user code
       // on the stack at this point.
-      if (j$.isAsyncFunction_(fn)) {
+      if (private$.isAsyncFunction(fn)) {
         this.onException(
           new Error(
             'An asynchronous before/it/after ' +
@@ -288,23 +288,12 @@ getJasmineRequireObj().QueueRunner = function(j$) {
 
   function wrapInPromiseResolutionHandler(fn) {
     return function(maybeArg) {
-      if (j$.isError_(maybeArg)) {
+      if (private$.isError(maybeArg)) {
         fn(maybeArg);
       } else {
         fn();
       }
     };
-  }
-
-  function errorOrMsgForGlobalError(error, event) {
-    // TODO: In cases where error is a string or undefined, the error message
-    // that gets sent to reporters will be `${message} thrown`, which could
-    // be improved to not say "thrown" when the cause wasn't necessarily
-    // an exception or to provide hints about throwing Errors rather than
-    // strings.
-    return (
-      error || (event && event.message) || 'Global error event with no message'
-    );
   }
 
   return QueueRunner;

@@ -1,4 +1,3 @@
-/* eslint-env node, es6 */
 module.exports = {
   srcDir: 'src',
   srcFiles: [
@@ -7,29 +6,28 @@ module.exports = {
     'core/util.js',
     'core/Spec.js',
     'core/Env.js',
-    'core/JsApiReporter.js',
     'core/PrettyPrinter.js',
     'core/Suite.js',
     'core/**/*.js',
     'html/**/*.js',
     '**/*.js',
-    '!boot/**.js'
+    '!boot/**.js',
+    '!core/requireSuffix.js',
+    '!html/requireSuffix.js'
   ],
   specDir: 'spec',
   specFiles: ['**/*[Ss]pec.js', '!npmPackage/**/*'],
   helpers: [
     'helpers/init.js',
-    'helpers/generator.js',
     'helpers/BrowserFlags.js',
+    'helpers/environments.js',
     'helpers/domHelpers.js',
     'helpers/integrationMatchers.js',
     'helpers/callerFilenameShim.js',
+    'helpers/monkeyPatchingSpecs.js',
     'helpers/defineJasmineUnderTest.js',
     'helpers/resetEnv.js'
   ],
-  env: {
-    forbidDuplicateNames: true
-  },
   random: true,
   browser: {
     name: process.env.JASMINE_BROWSER || 'firefox',

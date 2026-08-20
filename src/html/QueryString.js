@@ -1,4 +1,6 @@
-jasmineRequire.QueryString = function() {
+getJasmineHtmlRequireObj().QueryString = function() {
+  'use strict';
+
   /**
    * Reads and manipulates the query string.
    * @since 2.0.0
@@ -12,6 +14,7 @@ jasmineRequire.QueryString = function() {
      */
     constructor(options) {
       this.#getWindowLocation = options.getWindowLocation;
+      Object.freeze(this);
     }
 
     /**
@@ -79,5 +82,6 @@ jasmineRequire.QueryString = function() {
     return '?' + qStrPairs.join('&');
   }
 
+  Object.freeze(QueryString.prototype);
   return QueryString;
 };

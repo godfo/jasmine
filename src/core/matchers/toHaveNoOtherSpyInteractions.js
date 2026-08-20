@@ -1,5 +1,7 @@
-getJasmineRequireObj().toHaveNoOtherSpyInteractions = function(j$) {
-  const getErrorMsg = j$.formatErrorMsg(
+getJasmineRequireObj().toHaveNoOtherSpyInteractions = function(j$, private$) {
+  'use strict';
+
+  const getErrorMsg = private$.formatErrorMsg(
     '<toHaveNoOtherSpyInteractions>',
     'expect(<spyObj>).toHaveNoOtherSpyInteractions()'
   );
@@ -17,7 +19,7 @@ getJasmineRequireObj().toHaveNoOtherSpyInteractions = function(j$) {
       compare: function(actual) {
         const result = {};
 
-        if (!j$.isObject_(actual)) {
+        if (!private$.isObject(actual)) {
           throw new Error(
             getErrorMsg('Expected an object, but got ' + typeof actual + '.')
           );

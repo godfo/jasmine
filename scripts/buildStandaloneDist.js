@@ -42,8 +42,7 @@ async function zipStandaloneDist(jasmineVersion) {
         'lib/jasmine-core/jasmine.js',
         'lib/jasmine-core/jasmine-html.js',
         'lib/jasmine-core/jasmine.css',
-        'lib/jasmine-core/boot0.js',
-        'lib/jasmine-core/boot1.js',
+        'lib/jasmine-core/boot.js',
       ],
       destDir: 'lib/jasmine-' + jasmineVersion
     },
@@ -59,7 +58,7 @@ async function zipStandaloneDist(jasmineVersion) {
 
   const destPath = `./dist/jasmine-standalone-${jasmineVersion}.zip`;
   const output = fs.createWriteStream(destPath);
-  const archive = archiver('zip');
+  const archive = new archiver.ZipArchive();
 
   const done = new Promise(function(resolve, reject) {
     output.on('close', resolve);

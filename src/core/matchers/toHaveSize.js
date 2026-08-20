@@ -1,4 +1,6 @@
-getJasmineRequireObj().toHaveSize = function(j$) {
+getJasmineRequireObj().toHaveSize = function(j$, private$) {
+  'use strict';
+
   /**
    * {@link expect} the actual size to be equal to the expected, using array-like length or object keys size.
    * @function
@@ -17,15 +19,15 @@ getJasmineRequireObj().toHaveSize = function(j$) {
         };
 
         if (
-          j$.isA_('WeakSet', actual) ||
-          j$.isWeakMap(actual) ||
-          j$.isDataView(actual)
+          private$.isA('WeakSet', actual) ||
+          private$.isWeakMap(actual) ||
+          private$.isDataView(actual)
         ) {
           throw new Error('Cannot get size of ' + actual + '.');
         }
 
         let actualSize;
-        if (j$.isSet(actual) || j$.isMap(actual)) {
+        if (private$.isSet(actual) || private$.isMap(actual)) {
           actualSize = actual.size;
         } else if (isLength(actual.length)) {
           actualSize = actual.length;

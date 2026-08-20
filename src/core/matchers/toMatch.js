@@ -1,5 +1,7 @@
-getJasmineRequireObj().toMatch = function(j$) {
-  const getErrorMsg = j$.formatErrorMsg(
+getJasmineRequireObj().toMatch = function(j$, private$) {
+  'use strict';
+
+  const getErrorMsg = private$.formatErrorMsg(
     '<toMatch>',
     'expect(<expectation>).toMatch(<string> || <regexp>)'
   );
@@ -17,7 +19,7 @@ getJasmineRequireObj().toMatch = function(j$) {
   function toMatch() {
     return {
       compare: function(actual, expected) {
-        if (!j$.isString_(expected) && !j$.isA_('RegExp', expected)) {
+        if (!private$.isString(expected) && !private$.isA('RegExp', expected)) {
           throw new Error(getErrorMsg('Expected is not a String or a RegExp'));
         }
 

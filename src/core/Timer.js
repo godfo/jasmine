@@ -1,4 +1,6 @@
 getJasmineRequireObj().Timer = function() {
+  'use strict';
+
   const defaultNow = (function(Date) {
     return function() {
       return new Date().getTime();
@@ -37,7 +39,11 @@ getJasmineRequireObj().Timer = function() {
     this.elapsed = function() {
       return now() - startTime;
     };
+
+    Object.freeze(this);
   }
 
+  Object.freeze(Timer);
+  Object.freeze(Timer.prototype);
   return Timer;
 };

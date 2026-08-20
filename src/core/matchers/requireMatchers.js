@@ -1,45 +1,47 @@
-getJasmineRequireObj().requireMatchers = function(jRequire, j$) {
+getJasmineRequireObj().requireMatchers = function(jRequire, j$, private$) {
+  'use strict';
+
   const availableMatchers = [
-      'nothing',
-      'toBe',
-      'toBeCloseTo',
-      'toBeDefined',
-      'toBeInstanceOf',
-      'toBeFalse',
-      'toBeFalsy',
-      'toBeGreaterThan',
-      'toBeGreaterThanOrEqual',
-      'toBeLessThan',
-      'toBeLessThanOrEqual',
-      'toBeNaN',
-      'toBeNegativeInfinity',
-      'toBeNull',
-      'toBePositiveInfinity',
-      'toBeTrue',
-      'toBeTruthy',
-      'toBeUndefined',
-      'toBeNullish',
-      'toContain',
-      'toEqual',
-      'toHaveSize',
-      'toHaveBeenCalled',
-      'toHaveBeenCalledBefore',
-      'toHaveBeenCalledOnceWith',
-      'toHaveBeenCalledTimes',
-      'toHaveBeenCalledWith',
-      'toHaveClass',
-      'toHaveClasses',
-      'toHaveSpyInteractions',
-      'toHaveNoOtherSpyInteractions',
-      'toMatch',
-      'toThrow',
-      'toThrowError',
-      'toThrowMatching'
-    ],
-    matchers = {};
+    'nothing',
+    'toBe',
+    'toBeCloseTo',
+    'toBeDefined',
+    'toBeInstanceOf',
+    'toBeFalse',
+    'toBeFalsy',
+    'toBeGreaterThan',
+    'toBeGreaterThanOrEqual',
+    'toBeLessThan',
+    'toBeLessThanOrEqual',
+    'toBeNaN',
+    'toBeNegativeInfinity',
+    'toBeNull',
+    'toBePositiveInfinity',
+    'toBeTrue',
+    'toBeTruthy',
+    'toBeUndefined',
+    'toBeNullish',
+    'toContain',
+    'toEqual',
+    'toHaveSize',
+    'toHaveBeenCalled',
+    'toHaveBeenCalledBefore',
+    'toHaveBeenCalledOnceWith',
+    'toHaveBeenCalledTimes',
+    'toHaveBeenCalledWith',
+    'toHaveClass',
+    'toHaveClasses',
+    'toHaveSpyInteractions',
+    'toHaveNoOtherSpyInteractions',
+    'toMatch',
+    'toThrow',
+    'toThrowError',
+    'toThrowMatching'
+  ];
+  const matchers = {};
 
   for (const name of availableMatchers) {
-    matchers[name] = jRequire[name](j$);
+    matchers[name] = jRequire[name](j$, private$);
   }
 
   return matchers;

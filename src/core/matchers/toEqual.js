@@ -1,4 +1,6 @@
-getJasmineRequireObj().toEqual = function(j$) {
+getJasmineRequireObj().toEqual = function(j$, private$) {
+  'use strict';
+
   /**
    * {@link expect} the actual value to be equal to the expected, using deep equality comparison.
    * @function
@@ -12,9 +14,11 @@ getJasmineRequireObj().toEqual = function(j$) {
     return {
       compare: function(actual, expected) {
         const result = {
-            pass: false
-          },
-          diffBuilder = new j$.DiffBuilder({ prettyPrinter: matchersUtil.pp });
+          pass: false
+        };
+        const diffBuilder = new private$.DiffBuilder({
+          prettyPrinter: matchersUtil.pp
+        });
 
         result.pass = matchersUtil.equals(actual, expected, diffBuilder);
 

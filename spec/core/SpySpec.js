@@ -2,7 +2,7 @@ describe('Spies', function() {
   let env;
 
   beforeEach(function() {
-    env = new jasmineUnderTest.Env();
+    env = new privateUnderTest.Env();
   });
 
   afterEach(function() {
@@ -50,8 +50,8 @@ describe('Spies', function() {
         TestClass.prototype.someFunction
       );
 
-      expect(spy.and).toEqual(jasmine.any(jasmineUnderTest.SpyStrategy));
-      expect(spy.calls).toEqual(jasmine.any(jasmineUnderTest.CallTracker));
+      expect(spy.and).toEqual(jasmine.any(privateUnderTest.SpyStrategy));
+      expect(spy.calls).toEqual(jasmine.any(privateUnderTest.CallTracker));
     });
 
     it('tracks the argument of calls', function() {
@@ -106,8 +106,8 @@ describe('Spies', function() {
       ];
 
       for (let arity = 0; arity < functions.length; arity++) {
-        const someFunction = functions[arity],
-          spy = env.createSpy(someFunction.name, someFunction);
+        const someFunction = functions[arity];
+        const spy = env.createSpy(someFunction.name, someFunction);
 
         expect(spy.length).toEqual(arity);
       }
@@ -126,6 +126,17 @@ describe('Spies', function() {
 
       expect(spyObj.method2()).toEqual('special sauce');
       expect(spyObj.method2.and.identity).toEqual('BaseName.method2');
+    });
+
+    it('works even if the provided object overrides hasOwnProperty', function() {
+      const spyObj = env.createSpyObj('BaseName', {
+        method1: 42,
+        hasOwnProperty() {
+          return false;
+        }
+      });
+
+      expect(spyObj.method1()).toEqual(42);
     });
 
     it('should create an object with a bunch of spy methods when you call jasmine.createSpyObj()', function() {
@@ -241,7 +252,7 @@ describe('Spies', function() {
   });
 
   it('uses the provided matchersUtil selecting a strategy', function() {
-    const matchersUtil = new jasmineUnderTest.MatchersUtil({
+    const matchersUtil = new privateUnderTest.MatchersUtil({
       customTesters: [
         function(a, b) {
           if ((a === 'bar' && b === 'baz') || (a === 'baz' && b === 'bar')) {
@@ -250,7 +261,7 @@ describe('Spies', function() {
         }
       ]
     });
-    const spy = new jasmineUnderTest.Spy('aSpy', matchersUtil);
+    const spy = new privateUnderTest.Spy('aSpy', matchersUtil);
     spy.and.returnValue('default strategy return value');
     spy.withArgs('bar').and.returnValue('custom strategy return value');
     expect(spy('foo')).toEqual('default strategy return value');

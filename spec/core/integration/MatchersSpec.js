@@ -2,7 +2,7 @@ describe('Matchers (Integration)', function() {
   let env;
 
   beforeEach(function() {
-    env = new jasmineUnderTest.Env();
+    env = new privateUnderTest.Env();
   });
 
   afterEach(function() {
@@ -143,7 +143,7 @@ describe('Matchers (Integration)', function() {
 
   function verifyFailsWithCustomObjectFormattersAsync(config) {
     it('uses custom object formatters', async function() {
-      const env = new jasmineUnderTest.Env();
+      const env = new privateUnderTest.Env();
       env.it('a spec', function() {
         env.addCustomObjectFormatter(config.formatter);
         return config.expectations(env);
@@ -560,16 +560,16 @@ describe('Matchers (Integration)', function() {
 
   describe('toHaveBeenCalledBefore', function() {
     verifyPasses(function(env) {
-      const a = env.createSpy('a'),
-        b = env.createSpy('b');
+      const a = env.createSpy('a');
+      const b = env.createSpy('b');
       a();
       b();
       env.expect(a).toHaveBeenCalledBefore(b);
     });
 
     verifyFails(function(env) {
-      const a = env.createSpy('a'),
-        b = env.createSpy('b');
+      const a = env.createSpy('a');
+      const b = env.createSpy('b');
       b();
       a();
       env.expect(a).toHaveBeenCalledBefore(b);

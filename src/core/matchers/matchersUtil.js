@@ -1,4 +1,6 @@
-getJasmineRequireObj().MatchersUtil = function(j$) {
+getJasmineRequireObj().MatchersUtil = function(j$, private$) {
+  'use strict';
+
   /**
    * @class MatchersUtil
    * @classdesc Utilities for use in implementing matchers.<br>
@@ -11,7 +13,7 @@ getJasmineRequireObj().MatchersUtil = function(j$) {
     this.customTesters_ = options.customTesters || [];
     /**
      * Formats a value for use in matcher failure messages and similar contexts,
-     * taking into account the current set of custom value formatters.
+     * taking into account the current set of custom object formatters.
      * @function
      * @name MatchersUtil#pp
      * @since 3.6.0
@@ -36,7 +38,7 @@ getJasmineRequireObj().MatchersUtil = function(j$) {
       return false;
     }
 
-    if (j$.isSet(haystack)) {
+    if (private$.isSet(haystack)) {
       // Try .has() first. It should be faster in cases where
       // needle === something in haystack. Fall back to .equals() comparison
       // if that fails.
@@ -45,7 +47,7 @@ getJasmineRequireObj().MatchersUtil = function(j$) {
       }
     }
 
-    if (j$.isIterable_(haystack) && !j$.isString_(haystack)) {
+    if (private$.isIterable(haystack) && !private$.isString(haystack)) {
       // Arrays, Sets, etc.
       for (const candidate of haystack) {
         if (this.equals(candidate, needle)) {
@@ -61,7 +63,7 @@ getJasmineRequireObj().MatchersUtil = function(j$) {
       return haystack.indexOf(needle) >= 0;
     }
 
-    if (j$.isNumber_(haystack.length)) {
+    if (private$.isNumber(haystack.length)) {
       // Objects that are shaped like arrays but aren't iterable
       for (let i = 0; i < haystack.length; i++) {
         if (this.equals(haystack[i], needle)) {
@@ -74,14 +76,14 @@ getJasmineRequireObj().MatchersUtil = function(j$) {
   };
 
   MatchersUtil.prototype.buildFailureMessage = function() {
-    const args = Array.prototype.slice.call(arguments, 0),
-      matcherName = args[0],
-      isNot = args[1],
-      actual = args[2],
-      expected = args.slice(3),
-      englishyPredicate = matcherName.replace(/[A-Z]/g, function(s) {
-        return ' ' + s.toLowerCase();
-      });
+    const args = Array.prototype.slice.call(arguments, 0);
+    const matcherName = args[0];
+    const isNot = args[1];
+    const actual = args[2];
+    const expected = args.slice(3);
+    const englishyPredicate = matcherName.replace(/[A-Z]/g, function(s) {
+      return ' ' + s.toLowerCase();
+    });
 
     let message =
       'Expected ' +
@@ -108,7 +110,7 @@ getJasmineRequireObj().MatchersUtil = function(j$) {
     bStack,
     diffBuilder
   ) {
-    if (j$.isFunction_(b.valuesForDiff_)) {
+    if (private$.isFunction(b.valuesForDiff_)) {
       const values = b.valuesForDiff_(a, this.pp);
       this.eq_(values.other, values.self, aStack, bStack, diffBuilder);
     } else {
@@ -123,8 +125,8 @@ getJasmineRequireObj().MatchersUtil = function(j$) {
     bStack,
     diffBuilder
   ) {
-    const asymmetricA = j$.isAsymmetricEqualityTester_(a);
-    const asymmetricB = j$.isAsymmetricEqualityTester_(b);
+    const asymmetricA = private$.isAsymmetricEqualityTester(a);
+    const asymmetricB = private$.isAsymmetricEqualityTester(b);
 
     if (asymmetricA === asymmetricB) {
       return undefined;
@@ -159,7 +161,7 @@ getJasmineRequireObj().MatchersUtil = function(j$) {
    * @returns {boolean} True if the values are equal
    */
   MatchersUtil.prototype.equals = function(a, b, diffBuilder) {
-    diffBuilder = diffBuilder || j$.NullDiffBuilder();
+    diffBuilder = diffBuilder || private$.NullDiffBuilder();
     diffBuilder.setRoots(a, b);
 
     return this.eq_(a, b, [], [], diffBuilder);
@@ -274,8 +276,8 @@ getJasmineRequireObj().MatchersUtil = function(j$) {
       return false;
     }
 
-    const aIsDomNode = j$.isDomNode(a);
-    const bIsDomNode = j$.isDomNode(b);
+    const aIsDomNode = private$.isDomNode(a);
+    const bIsDomNode = private$.isDomNode(b);
     if (aIsDomNode && bIsDomNode) {
       // At first try to use DOM3 method isEqualNode
       result = a.isEqualNode(b);
@@ -289,8 +291,8 @@ getJasmineRequireObj().MatchersUtil = function(j$) {
       return false;
     }
 
-    const aIsPromise = j$.isPromise(a);
-    const bIsPromise = j$.isPromise(b);
+    const aIsPromise = private$.isPromise(a);
+    const bIsPromise = private$.isPromise(b);
     if (aIsPromise && bIsPromise) {
       return a === b;
     }
@@ -344,7 +346,7 @@ getJasmineRequireObj().MatchersUtil = function(j$) {
       if (!result) {
         return false;
       }
-    } else if (j$.isMap(a) && j$.isMap(b)) {
+    } else if (private$.isMap(a) && private$.isMap(b)) {
       if (a.size != b.size) {
         diffBuilder.recordMismatch();
         return false;
@@ -377,9 +379,15 @@ getJasmineRequireObj().MatchersUtil = function(j$) {
           // otherwise explicitly look up the mapKey in the other Map since we want keys with unique
           // obj identity (that are otherwise equal) to not match.
           if (
-            j$.isAsymmetricEqualityTester_(mapKey) ||
-            (j$.isAsymmetricEqualityTester_(cmpKey) &&
-              this.eq_(mapKey, cmpKey, aStack, bStack, j$.NullDiffBuilder()))
+            private$.isAsymmetricEqualityTester(mapKey) ||
+            (private$.isAsymmetricEqualityTester(cmpKey) &&
+              this.eq_(
+                mapKey,
+                cmpKey,
+                aStack,
+                bStack,
+                private$.NullDiffBuilder()
+              ))
           ) {
             mapValueB = b.get(cmpKey);
           } else {
@@ -390,7 +398,7 @@ getJasmineRequireObj().MatchersUtil = function(j$) {
             mapValueB,
             aStack,
             bStack,
-            j$.NullDiffBuilder()
+            private$.NullDiffBuilder()
           );
         }
       }
@@ -399,7 +407,7 @@ getJasmineRequireObj().MatchersUtil = function(j$) {
         diffBuilder.recordMismatch();
         return false;
       }
-    } else if (j$.isSet(a) && j$.isSet(b)) {
+    } else if (private$.isSet(a) && private$.isSet(b)) {
       if (a.size != b.size) {
         diffBuilder.recordMismatch();
         return false;
@@ -435,7 +443,7 @@ getJasmineRequireObj().MatchersUtil = function(j$) {
               otherValue,
               baseStack,
               otherStack,
-              j$.NullDiffBuilder()
+              private$.NullDiffBuilder()
             );
             if (!found && prevStackSize !== baseStack.length) {
               baseStack.splice(prevStackSize);
@@ -450,15 +458,15 @@ getJasmineRequireObj().MatchersUtil = function(j$) {
         diffBuilder.recordMismatch();
         return false;
       }
-    } else if (j$.isURL(a) && j$.isURL(b)) {
+    } else if (private$.isURL(a) && private$.isURL(b)) {
       // URLs have no enumrable properties, so the default object comparison
       // would consider any two URLs to be equal.
       return a.toString() === b.toString();
     } else {
       // Objects with different constructors are not equivalent, but `Object`s
       // or `Array`s from different frames are.
-      const aCtor = a.constructor,
-        bCtor = b.constructor;
+      const aCtor = a.constructor;
+      const bCtor = b.constructor;
       if (
         aCtor !== bCtor &&
         isFunction(aCtor) &&
@@ -488,7 +496,7 @@ getJasmineRequireObj().MatchersUtil = function(j$) {
 
     for (const key of aKeys) {
       // Deep compare each member
-      if (!j$.util.has(b, key)) {
+      if (!Object.hasOwn(b, key)) {
         diffBuilder.recordMismatch(
           objectKeysAreDifferentFormatter.bind(null, this.pp)
         );
@@ -518,7 +526,7 @@ getJasmineRequireObj().MatchersUtil = function(j$) {
     const allKeys = (function(o) {
       const keys = [];
       for (const key in o) {
-        if (j$.util.has(o, key)) {
+        if (Object.hasOwn(o, key)) {
           keys.push(key);
         }
       }
@@ -559,16 +567,16 @@ getJasmineRequireObj().MatchersUtil = function(j$) {
   // and not in objB.
   function extraKeysAndValues(objA, objB) {
     return MatchersUtil.keys(objA)
-      .filter(key => !j$.util.has(objB, key))
+      .filter(key => !Object.hasOwn(objB, key))
       .map(key => [key, objA[key]]);
   }
 
   function objectKeysAreDifferentFormatter(pp, actual, expected, path) {
-    const missingProperties = extraKeysAndValues(expected, actual),
-      extraProperties = extraKeysAndValues(actual, expected),
-      missingPropertiesMessage = formatKeyValuePairs(pp, missingProperties),
-      extraPropertiesMessage = formatKeyValuePairs(pp, extraProperties),
-      messages = [];
+    const missingProperties = extraKeysAndValues(expected, actual);
+    const extraProperties = extraKeysAndValues(actual, expected);
+    const missingPropertiesMessage = formatKeyValuePairs(pp, missingProperties);
+    const extraPropertiesMessage = formatKeyValuePairs(pp, extraProperties);
+    const messages = [];
 
     if (!path.depth()) {
       path = 'object';
@@ -598,7 +606,7 @@ getJasmineRequireObj().MatchersUtil = function(j$) {
       'Expected ' +
       path +
       ' to be a kind of ' +
-      j$.fnNameFor(expected.constructor) +
+      private$.fnNameFor(expected.constructor) +
       ', but was ' +
       pp(actual) +
       '.'

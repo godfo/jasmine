@@ -1,9 +1,13 @@
-getJasmineRequireObj().Clock = function() {
+getJasmineRequireObj().Clock = function(j$, private$) {
+  'use strict';
+
   /* global process */
   const NODE_JS =
     typeof process !== 'undefined' &&
     process.versions &&
     typeof process.versions.node === 'string';
+
+  const IsMockClockTimingFn = Symbol('IsMockClockTimingFn');
 
   /**
    * @class Clock
@@ -183,6 +187,13 @@ callbacks to execute _before_ running the next one.
       advanceUntilModeChanges();
     };
 
+    setTimeout[IsMockClockTimingFn] = true;
+    clearTimeout[IsMockClockTimingFn] = true;
+    setInterval[IsMockClockTimingFn] = true;
+    clearInterval[IsMockClockTimingFn] = true;
+
+    Object.freeze(this);
+
     return this;
 
     // Advances the Clock's time until the mode changes.
@@ -211,11 +222,9 @@ callbacks to execute _before_ running the next one.
           return;
         }
 
-        if (!delayedFunctionScheduler.isEmpty()) {
-          delayedFunctionScheduler.runNextQueuedFunction(function(millis) {
-            mockDate.tick(millis);
-          });
-        }
+        delayedFunctionScheduler.runNextQueuedFunction(function(millis) {
+          mockDate.tick(millis);
+        });
       }
     }
 
@@ -335,5 +344,8 @@ callbacks to execute _before_ running the next one.
     return this;
   };
 
+  Clock.IsMockClockTimingFn = IsMockClockTimingFn;
+  Object.freeze(Clock);
+  Object.freeze(Clock.prototype);
   return Clock;
 };

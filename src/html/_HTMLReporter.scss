@@ -23,7 +23,7 @@ $failing-mark: "\d7";
 $pending-mark: "*";
 $space: "\0020";
 
-$font-size: 11px;
+$font-size: 12px;
 $large-font-size: 14px;
 
 body {
@@ -55,7 +55,6 @@ body {
   }
 
   .jasmine-banner,
-  .jasmine-symbol-summary,
   .jasmine-summary,
   .jasmine-result-message,
   .jasmine-spec .jasmine-description,
@@ -104,72 +103,31 @@ body {
     float: right;
     line-height: $line-height * 2;
     padding-right: 9px;
+    font-size: $font-size;
   }
 
-  //--- Symbol summary ---//
+  //--- Progress bar ---//
 
-  .jasmine-symbol-summary {
-    overflow: hidden;
-    margin: $line-height 0;
+  progress {
+    width: 100%;
+  }
 
-    li {
-      display: inline-block;
-      height: math.div($line-height, 2) + 3;
-      width: $line-height;
+  progress[value] {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+  }
 
-      font-size: 16px;
+  progress[value]::-webkit-progress-value, progress[value]::-moz-progress-bar {
+    background: $passing-color;
 
-      &.jasmine-passed {
-        font-size: 14px;
-
-        &:before {
-          color: $passing-color;
-          content: $passing-mark;
-        }
-      }
-
-      &.jasmine-failed {
-        line-height: math.div($line-height, 2) + 2;
-
-        &:before {
-          color: $failing-color;
-          content: $failing-mark;
-          font-weight: bold;
-          margin-left: -1px;
-        }
-      }
-
-       &.jasmine-excluded {
-          font-size: 14px;
-
-          &:before {
-            color: $neutral-color;
-            content: $passing-mark;
-          }
-        }
-
-        &.jasmine-excluded-no-display {
-          font-size: 14px;
-          display: none;
-        }
-
-      &.jasmine-pending {
-        line-height: 17px;
-        &:before {
-          color: $pending-color;
-          content: $pending-mark;
-        }
-      }
-
-      &.jasmine-empty {
-        font-size: 14px;
-
-        &:before {
-          color: $pending-color;
-          content: $passing-mark;
-        }
-      }
+    .failed & {
+      background: $failing-color;
     }
+  }
+
+  progress.failed[value]::-webkit-progress-value, progress.failed[value]::-moz-progress-bar {
+    background: $failing-color;
   }
 
   .jasmine-run-options {
@@ -209,8 +167,13 @@ body {
     display: block;
     color: #eee;
 
+    &.jasmine-in-progress {
+      color: $text-color;
+    }
+
     &.jasmine-failed, &.jasmine-errored {
       background-color: $failing-color;
+      color: #eee; // Override jasmine-in-progress
       border-bottom: 1px solid $page-background-color;
     }
 
@@ -249,16 +212,23 @@ body {
     }
   }
 
-  // simplify toggle control between the two menu bars
+  // Switch between the three tabs
   &.jasmine-spec-list {
-    .jasmine-bar.jasmine-menu.jasmine-failure-list,
-    .jasmine-results .jasmine-failures {
+    .jasmine-results .jasmine-failures,
+    .jasmine-performance-view {
       display: none;
     }
   }
 
   &.jasmine-failure-list {
-    .jasmine-bar.jasmine-menu.jasmine-spec-list,
+    .jasmine-summary,
+    .jasmine-performance-view {
+      display: none;
+    }
+  }
+
+  &.jasmine-performance {
+    .jasmine-results .jasmine-failures,
     .jasmine-summary {
       display: none;
     }
@@ -304,6 +274,10 @@ body {
         color: $pending-color;
       }
 
+      &.jasmine-notApplicable a {
+        color: $pending-color;
+      }
+
       &.jasmine-excluded a {
         color: $neutral-color;
       }
@@ -325,7 +299,11 @@ body {
       }
 
       &.jasmine-pending a:before {
-        content: $passing-mark + $space;
+        content: $pending-mark + $space;
+      }
+
+      &.jasmine-notApplicable a:before {
+        content: $pending-mark + $space;
       }
 
       &.jasmine-excluded a:before {
@@ -432,5 +410,28 @@ body {
     .jasmine-debug-log-msg {
       white-space: pre;
     }
+  }
+}
+
+.jasmine-hidden {
+  display: none;
+}
+
+.jasmine-tab + .jasmine-tab:before {
+  content: ' | ';
+}
+
+.jasmine-performance-view {
+  h2, h3 {
+    margin-top: 1em;
+    margin-bottom: 1em;
+  }
+
+  table {
+    border-spacing: 5px;
+  }
+
+  th, td {
+    text-align: left;
   }
 }

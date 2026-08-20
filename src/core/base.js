@@ -1,4 +1,6 @@
-getJasmineRequireObj().base = function(j$, jasmineGlobal) {
+getJasmineRequireObj().base = function(j$, private$, jasmineGlobal) {
+  'use strict';
+
   /**
    * Maximum object depth the pretty printer will print to.
    * Set this to a lower value to speed up pretty printing if you have large objects.
@@ -20,7 +22,7 @@ getJasmineRequireObj().base = function(j$, jasmineGlobal) {
    * Maximum number of characters to display when pretty printing objects.
    * Characters past this number will be ellipised.
    * @name jasmine.MAX_PRETTY_PRINT_CHARS
-   * @default 100
+   * @default 1000
    * @since 2.9.0
    */
   j$.MAX_PRETTY_PRINT_CHARS = 1000;
@@ -41,11 +43,15 @@ getJasmineRequireObj().base = function(j$, jasmineGlobal) {
    */
   let DEFAULT_TIMEOUT_INTERVAL = 5000;
   Object.defineProperty(j$, 'DEFAULT_TIMEOUT_INTERVAL', {
+    enumerable: true,
     get: function() {
       return DEFAULT_TIMEOUT_INTERVAL;
     },
     set: function(newValue) {
-      j$.util.validateTimeout(newValue, 'jasmine.DEFAULT_TIMEOUT_INTERVAL');
+      private$.util.validateTimeout(
+        newValue,
+        'jasmine.DEFAULT_TIMEOUT_INTERVAL'
+      );
       DEFAULT_TIMEOUT_INTERVAL = newValue;
     }
   });
@@ -62,59 +68,61 @@ getJasmineRequireObj().base = function(j$, jasmineGlobal) {
    * @function
    * @return {Env}
    */
-  j$.getEnv = function(options) {
-    const env = (j$.currentEnv_ = j$.currentEnv_ || new j$.Env(options));
-    //jasmine. singletons in here (setTimeout blah blah).
-    return env;
-  };
+  Object.defineProperty(j$, 'getEnv', {
+    enumerable: true,
+    value: function(options) {
+      const env = (private$.currentEnv_ =
+        private$.currentEnv_ || new private$.Env(options));
+      //jasmine. singletons in here (setTimeout blah blah).
+      return env;
+    }
+  });
 
-  j$.isArray_ = function(value) {
-    return j$.isA_('Array', value);
-  };
-
-  j$.isObject_ = function(value) {
-    return value !== undefined && value !== null && j$.isA_('Object', value);
-  };
-
-  j$.isString_ = function(value) {
-    return j$.isA_('String', value);
-  };
-
-  j$.isNumber_ = function(value) {
-    return j$.isA_('Number', value);
-  };
-
-  j$.isFunction_ = function(value) {
-    return j$.isA_('Function', value);
-  };
-
-  j$.isAsyncFunction_ = function(value) {
-    return j$.isA_('AsyncFunction', value);
-  };
-
-  j$.isGeneratorFunction_ = function(value) {
-    return j$.isA_('GeneratorFunction', value);
-  };
-
-  j$.isTypedArray_ = function(value) {
+  private$.isObject = function(value) {
     return (
-      j$.isA_('Float32Array', value) ||
-      j$.isA_('Float64Array', value) ||
-      j$.isA_('Int16Array', value) ||
-      j$.isA_('Int32Array', value) ||
-      j$.isA_('Int8Array', value) ||
-      j$.isA_('Uint16Array', value) ||
-      j$.isA_('Uint32Array', value) ||
-      j$.isA_('Uint8Array', value) ||
-      j$.isA_('Uint8ClampedArray', value)
+      value !== undefined && value !== null && private$.isA('Object', value)
     );
   };
 
-  j$.isA_ = function(typeName, value) {
-    return j$.getType_(value) === '[object ' + typeName + ']';
+  private$.isString = function(value) {
+    return private$.isA('String', value);
   };
 
-  j$.isError_ = function(value) {
+  private$.isNumber = function(value) {
+    return private$.isA('Number', value);
+  };
+
+  private$.isFunction = function(value) {
+    return private$.isA('Function', value);
+  };
+
+  private$.isAsyncFunction = function(value) {
+    return private$.isA('AsyncFunction', value);
+  };
+
+  private$.isGeneratorFunction = function(value) {
+    return private$.isA('GeneratorFunction', value);
+  };
+
+  private$.isTypedArray = function(value) {
+    return (
+      private$.isA('Float32Array', value) ||
+      private$.isA('Float64Array', value) ||
+      private$.isA('Int16Array', value) ||
+      private$.isA('Int32Array', value) ||
+      private$.isA('Int8Array', value) ||
+      private$.isA('Uint16Array', value) ||
+      private$.isA('Uint32Array', value) ||
+      private$.isA('Uint8Array', value) ||
+      private$.isA('Uint8ClampedArray', value)
+    );
+  };
+
+  private$.isA = function(typeName, value) {
+    return private$.getType(value) === '[object ' + typeName + ']';
+  };
+
+  private$.isError = function(value) {
     if (!value) {
       return false;
     }
@@ -126,15 +134,15 @@ getJasmineRequireObj().base = function(j$, jasmineGlobal) {
     return typeof value.stack === 'string' && typeof value.message === 'string';
   };
 
-  j$.isAsymmetricEqualityTester_ = function(obj) {
-    return obj ? j$.isA_('Function', obj.asymmetricMatch) : false;
+  private$.isAsymmetricEqualityTester = function(obj) {
+    return obj ? private$.isA('Function', obj.asymmetricMatch) : false;
   };
 
-  j$.getType_ = function(value) {
+  private$.getType = function(value) {
     return Object.prototype.toString.apply(value);
   };
 
-  j$.isDomNode = function(obj) {
+  private$.isDomNode = function(obj) {
     // Node is a function, because constructors
     return typeof jasmineGlobal.Node !== 'undefined'
       ? obj instanceof jasmineGlobal.Node
@@ -145,7 +153,7 @@ getJasmineRequireObj().base = function(j$, jasmineGlobal) {
     // return obj.nodeType > 0;
   };
 
-  j$.isMap = function(obj) {
+  private$.isMap = function(obj) {
     return (
       obj !== null &&
       typeof obj !== 'undefined' &&
@@ -153,7 +161,7 @@ getJasmineRequireObj().base = function(j$, jasmineGlobal) {
     );
   };
 
-  j$.isSet = function(obj) {
+  private$.isSet = function(obj) {
     return (
       obj !== null &&
       typeof obj !== 'undefined' &&
@@ -161,7 +169,7 @@ getJasmineRequireObj().base = function(j$, jasmineGlobal) {
     );
   };
 
-  j$.isWeakMap = function(obj) {
+  private$.isWeakMap = function(obj) {
     return (
       obj !== null &&
       typeof obj !== 'undefined' &&
@@ -169,7 +177,7 @@ getJasmineRequireObj().base = function(j$, jasmineGlobal) {
     );
   };
 
-  j$.isURL = function(obj) {
+  private$.isURL = function(obj) {
     return (
       obj !== null &&
       typeof obj !== 'undefined' &&
@@ -177,11 +185,11 @@ getJasmineRequireObj().base = function(j$, jasmineGlobal) {
     );
   };
 
-  j$.isIterable_ = function(value) {
+  private$.isIterable = function(value) {
     return value && !!value[Symbol.iterator];
   };
 
-  j$.isDataView = function(obj) {
+  private$.isDataView = function(obj) {
     return (
       obj !== null &&
       typeof obj !== 'undefined' &&
@@ -189,15 +197,15 @@ getJasmineRequireObj().base = function(j$, jasmineGlobal) {
     );
   };
 
-  j$.isPromise = function(obj) {
+  private$.isPromise = function(obj) {
     return !!obj && obj.constructor === jasmineGlobal.Promise;
   };
 
-  j$.isPromiseLike = function(obj) {
-    return !!obj && j$.isFunction_(obj.then);
+  private$.isPromiseLike = function(obj) {
+    return !!obj && private$.isFunction(obj.then);
   };
 
-  j$.fnNameFor = function(func) {
+  private$.fnNameFor = function(func) {
     if (func.name) {
       return func.name;
     }
@@ -209,7 +217,7 @@ getJasmineRequireObj().base = function(j$, jasmineGlobal) {
     return matches ? matches[1] : '<anonymous>';
   };
 
-  j$.isPending_ = function(promise) {
+  private$.isPending = function(promise) {
     const sentinel = {};
     return Promise.race([promise, Promise.resolve(sentinel)]).then(
       function(result) {
@@ -219,6 +227,11 @@ getJasmineRequireObj().base = function(j$, jasmineGlobal) {
         return false;
       }
     );
+  };
+
+  private$.consoleError = function(...args) {
+    // eslint-disable-next-line no-console
+    console.error(...args);
   };
 
   /**
@@ -244,7 +257,7 @@ getJasmineRequireObj().base = function(j$, jasmineGlobal) {
    * @param {Constructor} clazz - The constructor to check against.
    */
   j$.any = function(clazz) {
-    return new j$.Any(clazz);
+    return new private$.Any(clazz);
   };
 
   /**
@@ -256,7 +269,7 @@ getJasmineRequireObj().base = function(j$, jasmineGlobal) {
    * @function
    */
   j$.anything = function() {
-    return new j$.Anything();
+    return new private$.Anything();
   };
 
   /**
@@ -268,7 +281,7 @@ getJasmineRequireObj().base = function(j$, jasmineGlobal) {
    * @function
    */
   j$.truthy = function() {
-    return new j$.Truthy();
+    return new private$.Truthy();
   };
 
   /**
@@ -281,7 +294,7 @@ getJasmineRequireObj().base = function(j$, jasmineGlobal) {
    * @function
    */
   j$.falsy = function() {
-    return new j$.Falsy();
+    return new private$.Falsy();
   };
 
   /**
@@ -293,7 +306,7 @@ getJasmineRequireObj().base = function(j$, jasmineGlobal) {
    * @function
    */
   j$.empty = function() {
-    return new j$.Empty();
+    return new private$.Empty();
   };
 
   /**
@@ -305,7 +318,7 @@ getJasmineRequireObj().base = function(j$, jasmineGlobal) {
    * @param {Object} sample - The value to compare the actual to.
    */
   j$.is = function(sample) {
-    return new j$.Is(sample);
+    return new private$.Is(sample);
   };
 
   /**
@@ -317,7 +330,7 @@ getJasmineRequireObj().base = function(j$, jasmineGlobal) {
    * @function
    */
   j$.notEmpty = function() {
-    return new j$.NotEmpty();
+    return new private$.NotEmpty();
   };
 
   /**
@@ -330,7 +343,7 @@ getJasmineRequireObj().base = function(j$, jasmineGlobal) {
    * @param {Object} sample - The subset of properties that _must_ be in the actual.
    */
   j$.objectContaining = function(sample) {
-    return new j$.ObjectContaining(sample);
+    return new private$.ObjectContaining(sample);
   };
 
   /**
@@ -343,7 +356,7 @@ getJasmineRequireObj().base = function(j$, jasmineGlobal) {
    * @param {RegExp|String} expected
    */
   j$.stringMatching = function(expected) {
-    return new j$.StringMatching(expected);
+    return new private$.StringMatching(expected);
   };
 
   /**
@@ -356,7 +369,7 @@ getJasmineRequireObj().base = function(j$, jasmineGlobal) {
    * @param {String} expected
    */
   j$.stringContaining = function(expected) {
-    return new j$.StringContaining(expected);
+    return new private$.StringContaining(expected);
   };
 
   /**
@@ -369,7 +382,7 @@ getJasmineRequireObj().base = function(j$, jasmineGlobal) {
    * @param {Array} sample
    */
   j$.arrayContaining = function(sample) {
-    return new j$.ArrayContaining(sample);
+    return new private$.ArrayContaining(sample);
   };
 
   /**
@@ -383,7 +396,7 @@ getJasmineRequireObj().base = function(j$, jasmineGlobal) {
    * @param {Array} sample
    */
   j$.arrayWithExactContents = function(sample) {
-    return new j$.ArrayWithExactContents(sample);
+    return new private$.ArrayWithExactContents(sample);
   };
 
   /**
@@ -397,7 +410,7 @@ getJasmineRequireObj().base = function(j$, jasmineGlobal) {
    * @param {Map} sample - The subset of items that _must_ be in the actual.
    */
   j$.mapContaining = function(sample) {
-    return new j$.MapContaining(sample);
+    return new private$.MapContaining(sample);
   };
 
   /**
@@ -411,7 +424,7 @@ getJasmineRequireObj().base = function(j$, jasmineGlobal) {
    * @param {Set} sample - The subset of items that _must_ be in the actual.
    */
   j$.setContaining = function(sample) {
-    return new j$.SetContaining(sample);
+    return new private$.SetContaining(sample);
   };
 
   /**
@@ -427,14 +440,14 @@ getJasmineRequireObj().base = function(j$, jasmineGlobal) {
       return false;
     }
     return (
-      putativeSpy.and instanceof j$.SpyStrategy &&
-      putativeSpy.calls instanceof j$.CallTracker
+      putativeSpy.and instanceof private$.SpyStrategy &&
+      putativeSpy.calls instanceof private$.CallTracker
     );
   };
 
   /**
    * Logs a message for use in debugging. If the spec fails, trace messages
-   * will be included in the {@link SpecResult|result} passed to the
+   * will be included in the {@link SpecDoneEvent|result} passed to the
    * reporter's specDone method.
    *
    * This method should be called only when a spec (including any associated

@@ -1,4 +1,6 @@
-getJasmineRequireObj().Deprecator = function(j$) {
+getJasmineRequireObj().Deprecator = function(j$, private$) {
+  'use strict';
+
   function Deprecator(topSuite) {
     this.topSuite_ = topSuite;
     this.verbose_ = false;
@@ -23,7 +25,7 @@ getJasmineRequireObj().Deprecator = function(j$) {
   ) {
     options = options || {};
 
-    if (!this.verbose_ && !j$.isError_(deprecation)) {
+    if (!this.verbose_ && !private$.isError(deprecation)) {
       if (this.toSuppress_.indexOf(deprecation) !== -1) {
         return;
       }
@@ -35,9 +37,8 @@ getJasmineRequireObj().Deprecator = function(j$) {
   };
 
   Deprecator.prototype.log_ = function(runnable, deprecation, options) {
-    if (j$.isError_(deprecation)) {
-      // eslint-disable-next-line no-console
-      console.error(deprecation);
+    if (private$.isError(deprecation)) {
+      private$.consoleError(deprecation);
       return;
     }
 
@@ -59,12 +60,11 @@ getJasmineRequireObj().Deprecator = function(j$) {
       context += '\n' + verboseNote;
     }
 
-    // eslint-disable-next-line no-console
-    console.error('DEPRECATION: ' + deprecation + context);
+    private$.consoleError('DEPRECATION: ' + deprecation + context);
   };
 
   Deprecator.prototype.stackTrace_ = function() {
-    const formatter = new j$.ExceptionFormatter();
+    const formatter = new private$.ExceptionFormatter();
     return formatter.stack(new Error()).replace(/^Error\n/m, '');
   };
 
@@ -73,7 +73,7 @@ getJasmineRequireObj().Deprecator = function(j$) {
       runnable = this.topSuite_;
     }
 
-    if (j$.isError_(deprecation)) {
+    if (private$.isError(deprecation)) {
       runnable.addDeprecationWarning(deprecation);
       return;
     }

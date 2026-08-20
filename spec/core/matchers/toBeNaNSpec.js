@@ -1,13 +1,13 @@
 describe('toBeNaN', function() {
   it('passes for NaN with a custom .not fail', function() {
-    const matcher = jasmineUnderTest.matchers.toBeNaN();
+    const matcher = privateUnderTest.matchers.toBeNaN();
     const result = matcher.compare(Number.NaN);
     expect(result.pass).toBe(true);
     expect(result.message).toEqual('Expected actual not to be NaN.');
   });
 
   it('fails for anything not a NaN', function() {
-    const matcher = jasmineUnderTest.matchers.toBeNaN();
+    const matcher = privateUnderTest.matchers.toBeNaN();
     let result;
 
     result = matcher.compare(1);
@@ -27,10 +27,10 @@ describe('toBeNaN', function() {
   });
 
   it('has a custom message on failure', function() {
-    const matcher = jasmineUnderTest.matchers.toBeNaN({
-        pp: jasmineUnderTest.makePrettyPrinter()
-      }),
-      result = matcher.compare(0);
+    const matcher = privateUnderTest.matchers.toBeNaN({
+      pp: privateUnderTest.makePrettyPrinter()
+    });
+    const result = matcher.compare(0);
 
     expect(result.message()).toEqual('Expected 0 to be NaN.');
   });
